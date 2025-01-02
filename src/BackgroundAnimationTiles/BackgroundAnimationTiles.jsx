@@ -16,6 +16,11 @@ export default class BackgroundAnimationTiles extends React.Component {
         });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        })
         camera.position.set(0, 100, 0);
         camera.lookAt(scene.position);
         renderer.render(scene, camera);
