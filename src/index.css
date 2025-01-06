@@ -15,4 +15,13 @@ code {
 #root {
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
+}
+
+:root {
+    --background-color: #000;
+    --border-color: #fff;
+    --text-color: #fff;
+    --highlight-color: #333;
+    --hover-color: #444;
 }

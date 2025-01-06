@@ -1,0 +1,9 @@
+.Window-Tiles {
+    display: flex;
+    flex: 1;
+}
+
+.Window-Tiles * {
+    margin: 0% 2px;
+    padding: 0px;
+}
