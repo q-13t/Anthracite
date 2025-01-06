@@ -56,3 +56,18 @@
     border-left: 1px solid var(--border-color);
     height: 25px;
 }
+
+.Window-Content {
+    width: 100%;
+    height: 96%;
+}
+
+.Window-Title-Container {
+    height: 20px;
+    flex: 1;
+}
+
+.Window-Title-Container * {
+    padding: 0px;
+    margin: 0px;
+}

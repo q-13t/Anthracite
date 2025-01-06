@@ -8,86 +8,125 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { Children } from 'react';
 
-const CustomWindow = ({ window, updateWindow, closeWindow, children }) => {
-    let [state, setState] = useState(window);
-    // console.log(Children.map(children, child => child));
+const CustomWindow = ({ window: properties, updateWindow, closeWindow, children }) => {
+    let [state, setState] = useState(properties);
+    let dragOffset = { x: 0, y: 0 };
+    let dragging = false;
+
 
     useEffect(() => {
-        setState(window);
+        setState(properties);
         let resizeObserver = new ResizeObserver((element) => {
-            if (window.maximized) return;
-            window.width = element[0].contentRect.width;
-            window.height = element[0].contentRect.height;
-            updateWindow(window.id, window);
-
+            if (properties.maximized) return;
+            properties.width = element[0].contentRect.width;
+            properties.height = element[0].contentRect.height;
+            properties.height_prev = element[0].contentRect.width;
+            properties.width_prev = element[0].contentRect.height;
+            setState({ ...state, width: element[0].contentRect.width, height: element[0].contentRect.height });
+            updateWindow(properties.id, properties);
         });
 
 
-        resizeObserver.observe(document.querySelector(`[window-id="${window.id}"]`));
+        resizeObserver.observe(document.querySelector(`[window-id="${properties.id}"]`));
         return () => {
             resizeObserver.disconnect();
         };
-    }, [window]);
+    }, [properties]);
+
+    const handleDragStart = (event) => {
+        event.preventDefault();
+        let offset_x = event.clientX - event.target.getBoundingClientRect().left;
+        let offset_y = event.clientY - event.target.getBoundingClientRect().top;
+        dragOffset = { x: offset_x, y: offset_y };
+        // console.log(dragOffset);
+        dragging = true;
+        event.target.style.cursor = 'move';
+        window.addEventListener('mousemove', handleDrag);
+        window.addEventListener('mouseup', handleDragEnd);
+    };
 
     const handleDrag = (event) => {
+        if (!dragging) return;
         event.preventDefault();
-        if (window.maximized) {
-            window.maximized = false;
-            let window_el = document.querySelector(`[window-id="${window.id}"]`);
-            window_el.style.width = window.width + 'px';
-            window_el.style.height = window.height + 'px';
-            document.querySelector(`[maximize-id="${window.id}"]`).src = window.maximized ? Minimize_svg : Maximize_svg;
+
+        if (properties.maximized) {
+            properties.maximized = false;
+            let window_el = document.querySelector(`[window-id="${properties.id}"]`);
+            window_el.style.width = properties.height_prev + 'px';
+            window_el.style.height = properties.width_prev + 'px';
+            document.querySelector(`[maximize-id="${properties.id}"]`).src = properties.maximized ? Minimize_svg : Maximize_svg;
         };
         window.cursor = 'move';
 
-        // FIX: Non preserved position of cursor within window on drag
-        setState({ ...state, x: event.clientX, y: event.clientY, x_prev: event.clientX, y_prev: event.clientY });
-        updateWindow(window.id, state);
+        let position_x = event.clientX - dragOffset.x;
+        let position_y = event.clientY - dragOffset.y;
+        properties.x = position_x;
+        properties.y = position_y;
+        properties.x_prev = position_x;
+        properties.y_prev = position_y;
+        updateWindow(properties.id, properties);
+    };
+
+    const handleDragEnd = (event) => {
+        dragging = false;
+        event.target.style.cursor = 'default';
+        window.removeEventListener('mousemove', handleDrag);
+        window.removeEventListener('mouseup', handleDragEnd);
+        // let position_x = event.clientX - dragOffset.x;
+        // let position_y = event.clientY - dragOffset.y;
+        // properties.x = position_x;
+        // properties.y = position_y;
+        // updateWindow(properties.id, properties);
     };
 
     const handleMaximizeMinimize = () => {
-        window.visible = !window.visible;
-        updateWindow(window.id, window);
+        properties.visible = !properties.visible;
+        updateWindow(properties.id, properties);
     };
 
     const handleWindowResizeClick = () => {
-        window.maximized = !window.maximized;
-        let window_el = document.querySelector(`[window-id="${window.id}"]`);
+        properties.maximized = !properties.maximized;
+        let window_el = document.querySelector(`[window-id="${properties.id}"]`);
 
-        if (window.maximized) {
-            window.x = 0;
-            window.y = 0;
+        if (properties.maximized) {
+            properties.x = 0;
+            properties.y = 0;
             const container = document.getElementById('Window-Frames').getBoundingClientRect();
             window_el.style.width = (container.width - 10) + 'px';
             window_el.style.height = (container.height - 10) + 'px';
 
-            window.height_prev = window.height;
-            window.width_prev = window.width;
-            window.height = container.height - 10;
-            window.width = container.width - 10;
+            properties.height_prev = properties.height;
+            properties.width_prev = properties.width;
+            properties.height = container.height - 10;
+            properties.width = container.width - 10;
         } else {
-            window.x = window.x_prev;
-            window.y = window.y_prev;
-            window.height = window.height_prev;
-            window.width = window.width_prev;
-            window_el.style.width = window.width + 'px';
-            window_el.style.height = window.height + 'px';
+            properties.x = properties.x_prev;
+            properties.y = properties.y_prev;
+            properties.height = properties.height_prev;
+            properties.width = properties.width_prev;
+            window_el.style.width = properties.width + 'px';
+            window_el.style.height = properties.height + 'px';
         }
-        updateWindow(window.id, window);
+        setState(properties);
+        updateWindow(properties.id, properties);
         // Update the image for the maximize button
-        document.querySelector(`[maximize-id="${window.id}"]`).src = window.maximized ? Minimize_svg : Maximize_svg;
+        document.querySelector(`[maximize-id="${properties.id}"]`).src = properties.maximized ? Minimize_svg : Maximize_svg;
+        console.log(state, properties);
+
     }
 
 
 
     return (
-        <div key={window.id} window-id={window.id} className='Window' style={{ left: window.x, top: window.y, visibility: window.visible ? 'visible' : 'hidden', zIndex: window.zIndex, width: window.width + "px", height: window.height + "px" }}>
-            <div className='Window-Header' draggable onDrag={(event) => { handleDrag(event) }}>
-                <p className='Window-Title'>{window.title}</p>
+        <div key={properties.id} window-id={properties.id} className='Window' style={{ left: properties.x, top: properties.y, visibility: properties.visible ? 'visible' : 'hidden', zIndex: properties.zIndex, width: properties.width + "px", height: properties.height + "px" }}>
+            <div className='Window-Header' >
+                <div className='Window-Title-Container' onMouseDown={(event) => { handleDragStart(event) }} onMouseMove={(event) => { handleDrag(event) }} onMouseUp={(event) => { handleDragEnd(event) }}>
+                    <p className='Window-Title'>{properties.title}</p>
+                </div>
                 <div className='Window-Buttons'>
                     <img className='window-control' src={hide_svg} alt="hide/show" onClick={(e) => { handleMaximizeMinimize(e) }} />
-                    <img maximize-id={window.id} className='window-control' src={Maximize_svg} alt="minimize/maximize" onClick={() => { handleWindowResizeClick() }} />
-                    <img className='window-control' src={Close_svg} alt="close" onClick={() => { closeWindow(window.id) }} />
+                    <img maximize-id={properties.id} className='window-control' src={Maximize_svg} alt="minimize/maximize" onClick={() => { handleWindowResizeClick() }} />
+                    <img className='window-control' src={Close_svg} alt="close" onClick={() => { closeWindow(properties.id) }} />
                 </div>
             </div>
             <div className='Window-Content'>
