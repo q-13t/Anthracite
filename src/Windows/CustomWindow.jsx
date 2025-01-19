@@ -26,7 +26,6 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
             updateWindow(properties.id, properties);
         });
 
-
         resizeObserver.observe(document.querySelector(`[window-id="${properties.id}"]`));
         return () => {
             resizeObserver.disconnect();
@@ -58,8 +57,8 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
         };
         window.cursor = 'move';
 
-        let position_x = event.clientX - dragOffset.x;
-        let position_y = event.clientY - dragOffset.y;
+        let position_x = Math.min(Math.max(event.clientX - dragOffset.x, 0), document.body.clientWidth - properties.width);
+        let position_y = Math.min(Math.max(event.clientY - dragOffset.y, 0), document.body.clientHeight - properties.height - 40);
         properties.x = position_x;
         properties.y = position_y;
         properties.x_prev = position_x;
@@ -70,13 +69,8 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
     const handleDragEnd = (event) => {
         dragging = false;
         event.target.style.cursor = 'default';
-        window.removeEventListener('mousemove', handleDrag);
-        window.removeEventListener('mouseup', handleDragEnd);
-        // let position_x = event.clientX - dragOffset.x;
-        // let position_y = event.clientY - dragOffset.y;
-        // properties.x = position_x;
-        // properties.y = position_y;
-        // updateWindow(properties.id, properties);
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('mouseup', handleDragEnd);
     };
 
     const handleMaximizeMinimize = () => {
@@ -109,18 +103,16 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
         }
         setState(properties);
         updateWindow(properties.id, properties);
-        // Update the image for the maximize button
         document.querySelector(`[maximize-id="${properties.id}"]`).src = properties.maximized ? Minimize_svg : Maximize_svg;
         console.log(state, properties);
-
     }
 
 
 
     return (
-        <div key={properties.id} window-id={properties.id} className='Window' style={{ left: properties.x, top: properties.y, visibility: properties.visible ? 'visible' : 'hidden', zIndex: properties.zIndex, width: properties.width + "px", height: properties.height + "px" }}>
+        <div key={properties.id} window-id={properties.id} className='Window' style={{ left: properties.x, top: properties.y, visibility: properties.visible ? 'visible' : 'hidden', zIndex: properties.zIndex, width: properties.width + "px", height: properties.height + "px", maxWidth: document.getElementById('Window-Frames').clientWidth - 10 + "px", maxHeight: document.getElementById('Window-Frames').clientHeight - 10 + "px" }}>
             <div className='Window-Header' >
-                <div className='Window-Title-Container' onMouseDown={(event) => { handleDragStart(event) }} onMouseMove={(event) => { handleDrag(event) }} onMouseUp={(event) => { handleDragEnd(event) }}>
+                <div className='Window-Title-Container' onDoubleClick={(event) => { handleWindowResizeClick() }} onMouseDown={(event) => { handleDragStart(event) }} onMouseMove={(event) => { handleDrag(event) }} onMouseUp={(event) => { handleDragEnd(event) }}>
                     <p className='Window-Title'>{properties.title}</p>
                 </div>
                 <div className='Window-Buttons'>
