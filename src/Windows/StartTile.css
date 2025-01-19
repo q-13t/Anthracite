@@ -1,3 +1,11 @@
 .Start-Tile {
     background-color: var(--background-color);
 }
+
+img {
+    height: inherit;
+}
+
+.Tile-container {
+    height: calc(100vh * 0.05);
+}

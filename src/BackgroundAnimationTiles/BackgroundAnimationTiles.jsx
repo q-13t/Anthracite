@@ -7,7 +7,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 export default class BackgroundAnimationTiles extends React.Component {
     componentDidMount() {
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+        const camera = new THREE.PerspectiveCamera(45, document.body.clientWidth / document.body.clientHeight, 1, 500);
 
         const canvas = document.getElementById('background-canvas');
 
@@ -15,12 +15,12 @@ export default class BackgroundAnimationTiles extends React.Component {
             canvas: canvas
         });
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(document.body.clientWidth, document.body.clientHeight);
         window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.aspect = document.body.clientWidth / document.body.clientHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        })
+            renderer.setSize(document.body.clientWidth, document.body.clientHeight, true);
+        });
         camera.position.set(0, 100, 0);
         camera.lookAt(scene.position);
         renderer.render(scene, camera);
@@ -59,8 +59,8 @@ export default class BackgroundAnimationTiles extends React.Component {
         generateRectangles();
         const pointer = new THREE.Vector2();
         function onPointerMove(event) {
-            pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-            pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+            pointer.x = (event.clientX / document.body.clientWidth) * 2 - 1;
+            pointer.y = - (event.clientY / document.body.clientHeight) * 2 + 1;
             pointer.x *= 100;
             pointer.y *= 45;
         }

@@ -100,11 +100,11 @@ export default class WindowManager extends React.Component {
                             <StartTile openWindow={this.openWindow.bind(this)} boundTo={"test"} />
                         </div>
                     </div>
-                    <div id="Start-Button" className='Start-Button' onClick={() => { this.StartPaneToggle() }}>
+                    <div id="Start-Button" className='Start-Button Tile-container' onClick={() => { this.StartPaneToggle() }}>
                         <img id="Start-Button-img" src={anthracite_svg} alt="" />
                     </div>
 
-                    <div className='Window-Tiles'>
+                    <div className='Window-Tiles Tile-container'>
                         {
                             this.Windows.map((data) => {
                                 return (
