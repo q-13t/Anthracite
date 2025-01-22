@@ -1,11 +1,11 @@
 import React from 'react';
 import anthracite_svg from '../assets/Anthracite.svg';
-import WindowsParams from './WindowParams';
-import CustomWindow from './CustomWindow';
-import WindowTile from './WindowTile';
-import StartTile from './StartTile';
+import WindowsParams from './WindowParams.ts';
+import CustomWindow from './CustomWindow.jsx';
+import WindowTile from './WindowTile.jsx';
+import StartTile from './StartTile.jsx';
 import './WindowManager.css';
-
+import ThreeDViewer from './3DViewer/3DViewer.jsx';
 
 export default class WindowManager extends React.Component {
 
@@ -18,7 +18,6 @@ export default class WindowManager extends React.Component {
     }
 
     updateZIndexes(e) {
-
         if (document.getElementById('Start-Button').contains(e.target) || document.getElementById('Start-Button-img').contains(e.target)) {
             return;
         } else if (!document.getElementById('Start-Pane').contains(e.target) && this.startPaneState == 1) {
@@ -32,10 +31,14 @@ export default class WindowManager extends React.Component {
 
     componentDidMount() {
         window.addEventListener('click', (e) => {
-            this.updateZIndexes(e);
-        });
+            if (e.target.tagName != 'INPUT') {
+                this.updateZIndexes(e);
+            }
+        }, true);
     }
-
+    componentWillUnmount() {
+        window.removeEventListener('click', this.updateZIndexes);
+    }
 
     updateWindow(id, window) {
         let w = this.Windows.find(w => w.params.id === id);
@@ -59,10 +62,11 @@ export default class WindowManager extends React.Component {
     openWindow(windowType) {
         switch (windowType) {
             case "test": {
-                this.Windows.push({ params: new WindowsParams(this.windowId++, 'test', 0, 0, 500, 500, this.z_index++), child: <StartTile openWindow={this.openWindow.bind(this)} boundTo={"test"} /> });
+                this.Windows.push({
+                    params: new WindowsParams(this.windowId, 'test', 0, 0, 1024, 720, this.z_index++), child: <ThreeDViewer id={this.windowId++} />
+                });
                 break;
             }
-
             default:
                 break;
         }
@@ -79,6 +83,7 @@ export default class WindowManager extends React.Component {
         }
         this.startPaneState = this.startPaneState == 0 ? 1 : 0;
     }
+
     render() {
         return (
             <div className='Window-Container'>
@@ -86,8 +91,7 @@ export default class WindowManager extends React.Component {
                     {
                         this.Windows.map((data) => {
                             return (
-
-                                <CustomWindow window={data.params} updateWindow={this.updateWindow.bind(this)} closeWindow={this.closeWindow.bind(this)} >
+                                <CustomWindow key={`Window-` + this.props.id} window={data.params} updateWindow={this.updateWindow.bind(this)} closeWindow={this.closeWindow.bind(this)} >
                                     {data.child}
                                 </CustomWindow>
                             );
@@ -108,7 +112,7 @@ export default class WindowManager extends React.Component {
                         {
                             this.Windows.map((data) => {
                                 return (
-                                    <WindowTile window={data.params} updateWindow={this.updateWindow.bind(this)} />
+                                    <WindowTile key={`Tile-` + this.props.id} window={data.params} updateWindow={this.updateWindow.bind(this)} />
                                 );
                             })
                         }

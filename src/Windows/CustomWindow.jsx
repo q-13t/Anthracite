@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import React from 'react';
 import { Children } from 'react';
 
+const resizeMargin = 5;
+
 const CustomWindow = ({ window: properties, updateWindow, closeWindow, children }) => {
     let [state, setState] = useState(properties);
     let dragOffset = { x: 0, y: 0 };
@@ -33,7 +35,10 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
     }, [properties]);
 
     const handleDragStart = (event) => {
-        event.preventDefault();
+        // if (event.target === document.querySelector(`[window-id="${properties.id}"]`)) return;
+        console.log(event.target);
+
+        // event.stopPropagation();
         let offset_x = event.clientX - event.target.getBoundingClientRect().left;
         let offset_y = event.clientY - event.target.getBoundingClientRect().top;
         dragOffset = { x: offset_x, y: offset_y };
@@ -46,7 +51,8 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
 
     const handleDrag = (event) => {
         if (!dragging) return;
-        event.preventDefault();
+        console.log(event.target);
+        // event.stopPropagation();
 
         if (properties.maximized) {
             properties.maximized = false;
@@ -69,8 +75,8 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
     const handleDragEnd = (event) => {
         dragging = false;
         event.target.style.cursor = 'default';
-        document.removeEventListener('mousemove', handleDrag);
-        document.removeEventListener('mouseup', handleDragEnd);
+        window.removeEventListener('mousemove', handleDrag);
+        window.removeEventListener('mouseup', handleDragEnd);
     };
 
     const handleMaximizeMinimize = () => {
@@ -107,12 +113,61 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
         console.log(state, properties);
     }
 
+    const handleResize = (event) => {
+        if (event.target !== document.querySelector(`[window-id="${properties.id}"]`)) return;
+        console.log(event.target);
 
+        const rect = event.target.getBoundingClientRect();
+        const distanceFromLeft = event.clientX - rect.left;
+        const distanceFromRight = rect.right - event.clientX;
+        const distanceFromBottom = rect.bottom - event.clientY;
+        let doResize = null;
+        if (distanceFromLeft < resizeMargin) {//left drag
+            doResize = (e) => {
+                properties.width = properties.width + (properties.x - e.clientX);
+                properties.x = e.clientX;
+                updateWindow(properties.id, properties);
+            };
+        } else if (distanceFromRight < resizeMargin) {//right drag
+            doResize = (e) => {
+                properties.width = e.clientX - properties.x;
+                updateWindow(properties.id, properties);
+            };
+        } else if (distanceFromBottom < resizeMargin) { //bottom drag
+            doResize = (e) => {
+                properties.height = e.clientY - properties.y;
+                updateWindow(properties.id, properties);
+            };
+        }
+        if (doResize) {
+            window.addEventListener("mousemove", doResize);
+            window.addEventListener("mouseup", () => {
+                window.removeEventListener("mousemove", doResize);
+            });
+        }
+    }
+
+    const showResizeHelp = (event) => {
+        if (event.target !== document.querySelector(`[window-id="${properties.id}"]`)) return;
+        console.log(event.target);
+
+        const rect = event.target.getBoundingClientRect();
+        const distanceFromLeft = event.clientX - rect.left;
+        const distanceFromRight = rect.right - event.clientX;
+        const distanceFromBottom = rect.bottom - event.clientY;
+        if (distanceFromLeft <= resizeMargin || distanceFromRight <= resizeMargin) {
+            event.target.style.cursor = 'ew-resize';
+        } else if (distanceFromBottom <= resizeMargin) {
+            event.target.style.cursor = 'ns-resize';
+        } else if (distanceFromBottom > resizeMargin && distanceFromRight > resizeMargin && distanceFromLeft > resizeMargin) {
+            event.target.style.cursor = 'default';
+        }
+    }
 
     return (
-        <div key={properties.id} window-id={properties.id} className='Window' style={{ left: properties.x, top: properties.y, visibility: properties.visible ? 'visible' : 'hidden', zIndex: properties.zIndex, width: properties.width + "px", height: properties.height + "px", maxWidth: document.getElementById('Window-Frames').clientWidth - 10 + "px", maxHeight: document.getElementById('Window-Frames').clientHeight - 10 + "px" }}>
+        <div window-id={properties.id} className='Window' res style={{ left: properties.x, top: properties.y, visibility: properties.visible ? 'visible' : 'hidden', zIndex: properties.zIndex, width: properties.width + "px", height: properties.height + "px", maxWidth: document.getElementById('Window-Frames').clientWidth - 10 + "px", maxHeight: document.getElementById('Window-Frames').clientHeight - 10 + "px" }} onMouseDown={(event) => { handleResize(event) }} onMouseMove={(event) => { showResizeHelp(event) }}>
             <div className='Window-Header' >
-                <div className='Window-Title-Container' onDoubleClick={(event) => { handleWindowResizeClick() }} onMouseDown={(event) => { handleDragStart(event) }} onMouseMove={(event) => { handleDrag(event) }} onMouseUp={(event) => { handleDragEnd(event) }}>
+                <div className='Window-Title-Container' onDoubleClick={(event) => { handleWindowResizeClick() }} onMouseDown={(event) => { handleDragStart(event); }}>
                     <p className='Window-Title'>{properties.title}</p>
                 </div>
                 <div className='Window-Buttons'>

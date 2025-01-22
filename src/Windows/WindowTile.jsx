@@ -1,15 +1,15 @@
 import React from 'react';
 import anthracite_svg from '../assets/Anthracite.svg';
 import './WindowTile.css';
-const WindowTile = ({ window, updateWindow }) => {
+const WindowTile = ({ window: params, updateWindow }) => {
 
     const handleWindowUpdate = () => {
-        window.visible = !window.visible;
-        updateWindow(window.id, window);
+        params.visible = !params.visible;
+        updateWindow(params.id, params);
     };
 
     return (
-        <div className='Window-Tile' onClick={() => { handleWindowUpdate() }} style={{ backgroundColor: window.visible ? 'var(--highlight-color)' : 'var(--background-color)' }}>
+        <div className='Window-Tile' onClick={() => { handleWindowUpdate() }} style={{ backgroundColor: params.visible ? 'var(--highlight-color)' : 'var(--background-color)' }}>
             <img src={anthracite_svg} alt="" />
         </div>
     );
