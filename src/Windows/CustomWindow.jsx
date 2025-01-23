@@ -35,14 +35,10 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
     }, [properties]);
 
     const handleDragStart = (event) => {
-        // if (event.target === document.querySelector(`[window-id="${properties.id}"]`)) return;
-        console.log(event.target);
-
-        // event.stopPropagation();
+        if (event.target === document.querySelector(`[window-id="${properties.id}"]`)) return;
         let offset_x = event.clientX - event.target.getBoundingClientRect().left;
         let offset_y = event.clientY - event.target.getBoundingClientRect().top;
         dragOffset = { x: offset_x, y: offset_y };
-        // console.log(dragOffset);
         dragging = true;
         event.target.style.cursor = 'move';
         window.addEventListener('mousemove', handleDrag);
@@ -51,8 +47,6 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
 
     const handleDrag = (event) => {
         if (!dragging) return;
-        console.log(event.target);
-        // event.stopPropagation();
 
         if (properties.maximized) {
             properties.maximized = false;
@@ -115,8 +109,6 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
 
     const handleResize = (event) => {
         if (event.target !== document.querySelector(`[window-id="${properties.id}"]`)) return;
-        console.log(event.target);
-
         const rect = event.target.getBoundingClientRect();
         const distanceFromLeft = event.clientX - rect.left;
         const distanceFromRight = rect.right - event.clientX;
@@ -149,7 +141,7 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
 
     const showResizeHelp = (event) => {
         if (event.target !== document.querySelector(`[window-id="${properties.id}"]`)) return;
-        console.log(event.target);
+
 
         const rect = event.target.getBoundingClientRect();
         const distanceFromLeft = event.clientX - rect.left;

@@ -20,7 +20,7 @@ export default class WindowManager extends React.Component {
     updateZIndexes(e) {
         if (document.getElementById('Start-Button').contains(e.target) || document.getElementById('Start-Button-img').contains(e.target)) {
             return;
-        } else if (!document.getElementById('Start-Pane').contains(e.target) && this.startPaneState == 1) {
+        } else if (!document.getElementById('Start-Pane').contains(e.target) && this.startPaneState === 1) {
             this.StartPaneToggle();
         };
         const intersected = this.Windows.find(w => w.params.x <= e.clientX && w.params.x + w.params.width >= e.clientX && w.params.y <= e.clientY && w.params.y + w.params.height >= e.clientY);
@@ -31,7 +31,7 @@ export default class WindowManager extends React.Component {
 
     componentDidMount() {
         window.addEventListener('click', (e) => {
-            if (e.target.tagName != 'INPUT') {
+            if (e.target.tagName !== 'INPUT') {
                 this.updateZIndexes(e);
             }
         }, true);
@@ -76,12 +76,12 @@ export default class WindowManager extends React.Component {
 
     StartPaneToggle() {
         let pane = document.getElementById('Start-Pane');
-        if (this.startPaneState == 0) {//pane is hidden -> open it
+        if (this.startPaneState === 0) {//pane is hidden -> open it
             pane.style.bottom = '6%'
         } else { //pane is open -> close it
             pane.style.bottom = '-100%'
         }
-        this.startPaneState = this.startPaneState == 0 ? 1 : 0;
+        this.startPaneState = this.startPaneState === 0 ? 1 : 0;
     }
 
     render() {
