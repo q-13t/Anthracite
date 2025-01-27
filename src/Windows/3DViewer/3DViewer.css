@@ -6,3 +6,108 @@
     overflow: hidden;
     display: flex;
 }
+
+
+.Viewer-Controls {
+    width: 100%;
+    padding: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.Viewer-Controls::-webkit-scrollbar,
+.Object-Selector-Container::-webkit-scrollbar {
+    width: 5px;
+    height: 8px;
+    background-color: var(--hover-color);
+}
+
+.Viewer-Controls::-webkit-scrollbar-thumb,
+.Object-Selector-Container::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+}
+
+.Scene-controls {
+    width: 100%;
+}
+
+.Control-Header {
+    position: sticky;
+    top: 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--highlight-color);
+    height: 25px;
+}
+
+.Control-Header:hover {
+    background: var(--hover-color);
+}
+
+.Control-Header p {
+    margin: 0px;
+    padding: 0px;
+}
+
+.Control-Header img {
+    width: inherit;
+    height: inherit;
+}
+
+.Control-Header img:hover,
+.Object-Selector-Expander:hover,
+.Selectable-Object:hover {
+    cursor: pointer;
+    background-color: var(--hover-color);
+}
+
+.Control-Container {
+    height: calc(99% - 25px);
+    overflow: auto;
+    transition: height 1s;
+}
+
+.Object-Selector {
+    display: flex;
+    width: fit-content;
+    position: absolute;
+    flex-direction: column;
+}
+
+.Selector-Collapsed {
+    display: none;
+}
+
+.Object-Selector-Expander {
+    height: 35px;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--highlight-color);
+    border: 1px solid var(--border-color);
+}
+
+.Object-Selector-Container {
+    width: auto;
+    margin-left: auto;
+    max-height: 75vh;
+    overflow: auto;
+}
+
+.Selectable-Object {
+    padding: 5px;
+    margin: 0px;
+    background: var(--background-color);
+    border-left: 5px solid transparent;
+}
+
+.Selected-Object {
+    padding: 5px;
+    margin: 0px;
+    background: var(--highlight-color);
+    border-left: 5px solid var(--border-color);
+}

@@ -1,44 +1,46 @@
-import { useState, useEffect } from "react";
+import BoolControl from "./Controls/BoolControl";
+import IntegerControl from "./Controls/IntegerControl";
+import ObjectSelectionControl from "./Controls/ObjectSelectionControl";
+import StringControl from "./Controls/StringControl";
+import VectorControl from "./Controls/VectorControl";
 
-const InputManager = () => {
-    const [value, setValue] = useState(0);
+const InputManager = ({ object, k, collapseItem, selectObject, selectedObject }) => {
+    const renderComponent = () => {
+
+        if (object !== null && k === null) {
+            if (object.type === "Group") {
+                return (<VectorControl object={object} k={'children'} collapseItem={collapseItem} subname={object.name ? object.name : object.constructor.name} selectObject={selectObject} selectedObject={selectedObject} />)
+            } else if (object.type === "GridHelper" || object.type === "AmbientLight" || object.type === "DirectionalLight" || object.type === "DirectionalLightHelper" || object.type === "Mesh") {
+                return (<ObjectSelectionControl object={object} selectObject={selectObject} selectedObject={selectedObject} />)
+            }
+        } else if (object === undefined && k === undefined) { return; }
+
+        switch (typeof object[k]) {
+            case "boolean":
+                return (<BoolControl object={object} k={k} />);
+
+            case "number":
+                return (<IntegerControl object={object} k={k} />);
+
+            case "string":
+                return (<StringControl object={object} k={k} />);
+
+            case "object":
+                if (object[k] !== null) {
+                    if (object[k].constructor.name === "Euler" || object[k].constructor.name === "Matrix4" || object[k].constructor.name === "Vector3" || object[k].constructor.name === "Color") {
+                        return (<VectorControl object={object} k={k} collapseItem={collapseItem} subname={object.constructor.name} />);
+                    }
+                }
+                break;
 
 
-    const handleChange = (event) => {
-        console.log(event);
-
-        setValue(Number(event.target.value));
-    };
-
-    const handleClick = (event) => {
-
-        console.log(event);
-    };
-
-    const handleWheel = (event) => {
-        console.log(event);
-        setValue(Math.min(Math.max(value + (event.deltaY > 0 ? 1 : -1), -10), 10));
-    };
-
-    console.log("render");
+            default:
+                break;
+        }
+    }
 
     return (
-        <div  >
-            <input
-                type="range"
-                value={value}
-                min={-10}
-                max={10}
-                onChange={(e) => handleChange(e)}
-            />
-            <input type="text" name="tes" id="test" defaultValue={value} onChange={(e) => handleChange(e)} />
-            <p
-                style={{ color: "white" }}
-                onClick={(e) => console.log("click")}
-            >
-                Value: {parseInt(value)}
-            </p>
-        </div>
+        renderComponent()
     );
 }
 

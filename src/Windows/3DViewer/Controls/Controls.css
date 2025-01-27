@@ -1,0 +1,83 @@
+.control-item {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    width: calc(100% - 10px);
+    height: 25px;
+    padding: 5px;
+    margin: 0px;
+}
+
+
+.vector-controls {
+    width: calc(100% - 10px);
+    padding: 5px;
+}
+
+
+.vector-item .control-item {
+    padding: 0px 0px 0px 15px;
+    width: calc(100% - 15px);
+}
+
+label {
+    grid-column: span 2;
+    color: var(--text-color);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.vector-item .vector-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-top: 1px solid var(--border-color);
+    height: 25px;
+    max-width: 100%;
+    text-overflow: ellipsis;
+}
+
+.vector-item .vector-header:hover {
+    background: var(--hover-color);
+    cursor: pointer;
+}
+
+.vector-item .vector-header:hover * {
+    cursor: pointer;
+}
+
+.vector-item .vector-header:hover img:hover {
+    background-color: var(--highlight-color);
+}
+
+.control-item input[type="number"],
+.control-item input[type="range"],
+.control-item input[type="text"] {
+    width: inherit;
+    margin: 0px;
+    padding: 0px;
+    background: transparent;
+    color: var(--text-color);
+    text-decoration: dashed;
+}
+
+.control-item input[type="text"] {
+    height: 100%;
+    justify-self: end;
+    grid-column: span 2;
+}
+
+.control-item input[type="checkbox"] {
+    height: 100%;
+    justify-self: end;
+    grid-column: 4;
+}
+
+.control-item input[type="number"]:focus,
+.control-item input[type="range"]:focus,
+.control-item input[type="text"]:focus {
+    outline: none;
+}

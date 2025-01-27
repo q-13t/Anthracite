@@ -16,6 +16,13 @@ code {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    color: var(--text-color);
+}
+
+.collapsed {
+    height: 0px;
+    display: none;
+
 }
 
 :root {
