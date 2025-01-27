@@ -164,9 +164,9 @@ export default class ThreeDViewer extends React.Component {
         }
     }
 
-    expandObjectSelector() {
-        let element = document.querySelector(`.Object-Selector-Container`);
-        let expander = document.querySelector(`.Object-Selector-Expander`);
+    expandObjectSelector(id) {
+        let element = document.querySelector(`[control-id="${id}"]`);;
+        let expander = document.querySelector(`[control-id="${id}"]`);;
 
         if (element && expander) {
             element.classList.toggle('Selector-Collapsed');
@@ -184,13 +184,13 @@ export default class ThreeDViewer extends React.Component {
             <div three-d-viewer={this.props.id} className="ThreeDViewer">
                 <canvas canvas-id={this.props.id} className="Viewer-Canvas"></canvas>
                 <div className="Object-Selector">
-                    <img src={DownArrow} className="Object-Selector-Expander" alt="" onClick={() => { this.expandObjectSelector() }} />
-                    <div className="Object-Selector-Container Selector-Collapsed" >
+                    <img caller-id={this.props.id + '-' + "Object-Select"} src={DownArrow} className="Object-Selector-Expander" alt="" onClick={() => { this.expandObjectSelector(this.props.id + '-' + "Object-Select") }} />
+                    <div control-id={this.props.id + '-' + "Object-Select"} className="Object-Selector-Container Selector-Collapsed" >
                         {
                             this.scene && this.scene.children &&
                             this.scene.children.map((object, index) => {
                                 return (
-                                    <InputManager key={index} object={object} k={null} collapseItem={this.collapseItem.bind(this)} selectObject={this.selectObject.bind(this)} selectedObject={this.selectedObject} />
+                                    <InputManager key={this.props.id + index + object} subKey={this.props.id + '-' + index + '-' + object} object={object} k={null} collapseItem={this.collapseItem.bind(this)} selectObject={this.selectObject.bind(this)} selectedObject={this.selectedObject} />
                                 )
                             })
                         }
@@ -198,45 +198,45 @@ export default class ThreeDViewer extends React.Component {
                 </div>
                 <div className="Viewer-Controls">
                     <div className="Scene-controls">
-                        <div className="Control-Header" onClick={() => { this.collapseItem("Camera") }}>
+                        <div className="Control-Header" onClick={() => { this.collapseItem(this.props.id + "Camera") }}>
                             <p>Camera</p>
-                            <img caller-id={"Camera"} src={DownArrow} alt="Collapse/Expand" />
+                            <img caller-id={this.props.id + "Camera"} src={DownArrow} alt="Collapse/Expand" />
                         </div>
-                        <div control-id={"Camera"} className="Control-Container collapsed">
+                        <div control-id={this.props.id + "Camera"} className="Control-Container collapsed">
                             {this.camera &&
-                                Object.keys(this.camera).map((key) => {
+                                Object.keys(this.camera).map((key, index) => {
 
-                                    return (<InputManager object={this.camera} k={key} collapseItem={this.collapseItem.bind(this)} />);
+                                    return (<InputManager key={this.props.id + index + key} subKey={this.props.id + '-' + index + '-' + key.type} object={this.camera} k={key} collapseItem={this.collapseItem.bind(this)} />);
 
                                 })
                             }
                         </div>
                     </div>
                     <div className="Scene-controls">
-                        <div className="Control-Header" onClick={() => { this.collapseItem("Scene") }}>
+                        <div className="Control-Header" onClick={() => { this.collapseItem(this.props.id + "Scene") }}>
                             <p>Scene</p>
-                            <img caller-id={"Scene"} src={DownArrow} alt="Collapse/Expand" />
+                            <img caller-id={this.props.id + "Scene"} src={DownArrow} alt="Collapse/Expand" />
                         </div>
-                        <div control-id={"Scene"} className="Control-Container collapsed">
+                        <div control-id={this.props.id + "Scene"} className="Control-Container collapsed">
                             {this.scene &&
                                 Object.keys(this.scene).map((key, index) => {
                                     if (key && this.scene) {
-                                        return (<InputManager key={key} object={this.scene} k={key} collapseItem={this.collapseItem.bind(this)} />);
+                                        return (<InputManager key={this.props.id + index + key} subKey={this.props.id + '-' + index + '-' + key} object={this.scene} k={key} collapseItem={this.collapseItem.bind(this)} />);
                                     }
                                 })
                             }
                         </div>
                     </div>
                     <div className="Scene-controls">
-                        <div className="Control-Header" onClick={() => { this.collapseItem("Object") }}>
+                        <div className="Control-Header" onClick={() => { this.collapseItem(this.props.id + "Object") }}>
                             <p>Object</p>
-                            <img caller-id={"Object"} src={DownArrow} alt="Collapse/Expand" />
+                            <img caller-id={this.props.id + "Object"} src={DownArrow} alt="Collapse/Expand" />
                         </div>
-                        <div control-id={"Object"} className="Control-Container collapsed">
+                        <div control-id={this.props.id + "Object"} className="Control-Container collapsed">
                             {this.selectedObject &&
                                 Object.keys(this.selectedObject).map((key, index) => {
                                     if (key && this.selectedObject) {
-                                        return (<InputManager key={key} object={this.selectedObject} k={key} collapseItem={this.collapseItem.bind(this)} />);
+                                        return (<InputManager key={this.props.id + index + key} subKey={this.props.id + '-' + index + '-' + key} object={this.selectedObject} k={key} collapseItem={this.collapseItem.bind(this)} />);
                                     }
                                 })
                             }

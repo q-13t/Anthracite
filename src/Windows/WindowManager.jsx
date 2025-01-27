@@ -63,8 +63,9 @@ export default class WindowManager extends React.Component {
         switch (windowType) {
             case "test": {
                 this.Windows.push({
-                    params: new WindowsParams(this.windowId, 'test', 0, 0, 1024, 720, this.z_index++), child: <ThreeDViewer id={this.windowId++} />
+                    params: new WindowsParams(this.windowId, 'test', 0, 0, 1024, 720, this.z_index++), child: <ThreeDViewer id={this.windowId} />
                 });
+                this.windowId++;
                 break;
             }
             default:
@@ -91,7 +92,7 @@ export default class WindowManager extends React.Component {
                     {
                         this.Windows.map((data) => {
                             return (
-                                <CustomWindow key={`Window-` + this.props.id} window={data.params} updateWindow={this.updateWindow.bind(this)} closeWindow={this.closeWindow.bind(this)} >
+                                <CustomWindow key={`Window-` + data.params.id} window={data.params} updateWindow={this.updateWindow.bind(this)} closeWindow={this.closeWindow.bind(this)} >
                                     {data.child}
                                 </CustomWindow>
                             );
@@ -112,7 +113,7 @@ export default class WindowManager extends React.Component {
                         {
                             this.Windows.map((data) => {
                                 return (
-                                    <WindowTile key={`Tile-` + this.props.id} window={data.params} updateWindow={this.updateWindow.bind(this)} />
+                                    <WindowTile key={`Tile-` + data.params.id} window={data.params} updateWindow={this.updateWindow.bind(this)} />
                                 );
                             })
                         }
