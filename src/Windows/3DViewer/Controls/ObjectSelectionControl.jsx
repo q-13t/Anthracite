@@ -2,7 +2,7 @@ import TrashCan from "../../../assets/TrashCan.svg";
 const ObjectSelectionControl = ({ object, selectObject, selectedObject }) => {
 
     const handleDeleteSelf = () => {
-        if (object.parent.children.length === 1) {
+        if (object.parent.children.length === 1 && object.parent.parent !== null) {
             object.parent.parent.remove(object.parent);
         } else {
             object.parent.remove(object);
