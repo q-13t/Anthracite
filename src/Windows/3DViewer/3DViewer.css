@@ -58,9 +58,16 @@
 
 .Control-Header img:hover,
 .Object-Selector-Expander:hover,
-.Selectable-Object:hover {
+.Selectable-Object:hover,
+.Addable-Object:hover {
     cursor: pointer;
     background-color: var(--hover-color);
+}
+
+.Addable-Object {
+    padding: 5px;
+    margin: 0px;
+    background-color: var(--background-color);
 }
 
 .Control-Container {

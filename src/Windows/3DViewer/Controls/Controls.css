@@ -17,6 +17,7 @@
 }
 
 
+
 .vector-item .control-item {
     padding: 0px 0px 0px 15px;
     width: calc(100% - 15px);
@@ -38,6 +39,7 @@ label {
     height: 25px;
     max-width: 100%;
     text-overflow: ellipsis;
+    background-color: var(--background-color);
 }
 
 .vector-item .vector-header:hover {

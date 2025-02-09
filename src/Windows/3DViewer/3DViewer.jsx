@@ -9,6 +9,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import DownArrow from "../../assets/DownArrow.svg";
 import UpArrow from '../../assets/UpArrow.svg';
+import PlusImg from '../../assets/Plus.svg';
 
 export default class ThreeDViewer extends React.Component {
     constructor(props) {
@@ -95,6 +96,7 @@ export default class ThreeDViewer extends React.Component {
                 object.rotation.set(-3, 0, 0);
                 object.name = 'Skull';
                 this.scene.add(object);
+                this.forceUpdate();
             });
         });
 
@@ -179,6 +181,41 @@ export default class ThreeDViewer extends React.Component {
         this.forceUpdate();
     }
 
+    addObject(type) {
+        let object;
+        switch (type) {
+            case "Cube": {
+                object = new THREE.Mesh(
+                    new THREE.BoxGeometry(5, 5, 5),
+                )
+                object.name = "Cube";
+                break;
+            }
+            case "Cone": {
+                object = new THREE.Mesh(
+                    new THREE.ConeGeometry(5, 5, 5),
+                )
+                object.name = "Cone";
+                break;
+            }
+            case "Sphere": {
+                object = new THREE.Mesh(
+                    new THREE.SphereGeometry(5, 32, 32),
+                );
+                object.name = "Sphere";
+                break;
+            }
+        }
+        object.material = new THREE.MeshBasicMaterial({ color: 0x404040 });
+        object.position.set(0, 0, 0);
+        object.rotation.set(0, 0, 0);
+        object.scale.set(1, 1, 1);
+        object.castShadow = true;
+        object.receiveShadow = true;
+        this.scene.add(object);
+        this.forceUpdate();
+    }
+
     render() {
         return (
             <div three-d-viewer={this.props.id} className="ThreeDViewer">
@@ -186,6 +223,18 @@ export default class ThreeDViewer extends React.Component {
                 <div className="Object-Selector">
                     <img caller-id={this.props.id + '-' + "Object-Select"} src={DownArrow} className="Object-Selector-Expander" alt="" onClick={() => { this.expandObjectSelector(this.props.id + '-' + "Object-Select") }} />
                     <div control-id={this.props.id + '-' + "Object-Select"} className="Object-Selector-Container Selector-Collapsed" >
+
+                        <div className="vector-item" >
+                            <div className="vector-header" onClick={() => { this.collapseItem(this.props.id + '-' + "Object-Add") }}>
+                                <label htmlFor="range">{"Add Object"}</label>
+                                <img src={DownArrow} caller-id={this.props.id + '-' + "Object-Add"} />
+                            </div>
+                            <div control-id={this.props.id + '-' + "Object-Add"} className="vector-controls collapsed ">
+                                <p className="Addable-Object" onClick={() => { this.addObject('Cube'); this.collapseItem(this.props.id + '-' + "Object-Add") }}>Cube</p>
+                                <p className="Addable-Object" onClick={() => { this.addObject('Cone'); this.collapseItem(this.props.id + '-' + "Object-Add") }}>Cone</p>
+                                <p className="Addable-Object" onClick={() => { this.addObject('Sphere'); this.collapseItem(this.props.id + '-' + "Object-Add") }}>Sphere</p>
+                            </div>
+                        </div>
                         {
                             this.scene && this.scene.children &&
                             this.scene.children.map((object, index) => {
@@ -203,13 +252,7 @@ export default class ThreeDViewer extends React.Component {
                             <img caller-id={this.props.id + "Camera"} src={DownArrow} alt="Collapse/Expand" />
                         </div>
                         <div control-id={this.props.id + "Camera"} className="Control-Container collapsed">
-                            {this.camera &&
-                                Object.keys(this.camera).map((key, index) => {
-
-                                    return (<InputManager key={this.props.id + index + key} subKey={this.props.id + '-' + index + '-' + key.type} object={this.camera} k={key} collapseItem={this.collapseItem.bind(this)} />);
-
-                                })
-                            }
+                            {this.camera && Object.keys(this.camera).map((key, index) => { return (<InputManager key={this.props.id + index + key} subKey={this.props.id + '-' + index + '-' + key.type} object={this.camera} k={key} collapseItem={this.collapseItem.bind(this)} />); })}
                         </div>
                     </div>
                     <div className="Scene-controls">
