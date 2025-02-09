@@ -83,7 +83,7 @@
 .Object-Selector-Expander {
     height: 35px;
     display: flex;
-    width: 100%;
+    width: 200px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -92,7 +92,7 @@
 }
 
 .Object-Selector-Container {
-    width: auto;
+    width: 200px;
     margin-left: auto;
     max-height: 75vh;
     overflow: auto;
@@ -101,7 +101,6 @@
 .Selectable-Object {
     padding: 5px;
     margin: 0px;
-    background: var(--background-color);
     border-left: 5px solid transparent;
 }
 
@@ -110,4 +109,25 @@
     margin: 0px;
     background: var(--highlight-color);
     border-left: 5px solid var(--border-color);
+}
+
+.Selectable-Object-Container {
+    text-overflow: ellipsis;
+    display: flex;
+    height: 25px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--background-color);
+}
+
+.Selectable-Object-Container p {
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
+
+}
+
+.Self-Delete-Object:hover {
+    background-color: var(--warning-color);
 }
