@@ -5,30 +5,44 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
 export default class BackgroundAnimationTiles extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.camera = null;
+        this.scene = null;
+        this.renderer = null;
+    }
+
+    componentWillUnmount() {
+        this.camera = null;
+        this.scene = null;
+        this.renderer = null;
+    }
+
     componentDidMount() {
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, document.body.clientWidth / document.body.clientHeight, 1, 500);
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(45, document.body.clientWidth / document.body.clientHeight, 1, 500);
 
         const canvas = document.getElementById('background-canvas');
 
-        const renderer = new THREE.WebGLRenderer({
+        this.renderer = new THREE.WebGLRenderer({
             canvas: canvas
         });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(document.body.clientWidth, document.body.clientHeight);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setSize(document.body.clientWidth, document.body.clientHeight);
         window.addEventListener('resize', () => {
-            camera.aspect = document.body.clientWidth / document.body.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(document.body.clientWidth, document.body.clientHeight, true);
+            this.camera.aspect = document.body.clientWidth / document.body.clientHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(document.body.clientWidth, document.body.clientHeight, true);
         });
-        camera.position.set(0, 100, 0);
-        camera.lookAt(scene.position);
-        renderer.render(scene, camera);
-        renderer.shadowMap.enabled = true;
+        this.camera.position.set(0, 100, 0);
+        this.camera.lookAt(this.scene.position);
+        this.renderer.render(this.scene, this.camera);
+        this.renderer.shadowMap.enabled = true;
 
         const rectangles = [];
 
-        function generateRectangles() {
+        const generateRectangles = () => {
             const scaleX = 10;
             const scaleY = 10;
             for (let x = 0; x < 20; x++) {
@@ -38,17 +52,17 @@ export default class BackgroundAnimationTiles extends React.Component {
                     const rectangle = new THREE.Mesh(geometry, material);
                     rectangle.position.set(-97 + (scaleX * x), -20, -45 + (scaleY * y));
 
-                    scene.add(rectangle);
+                    this.scene.add(rectangle);
                     rectangles.push(rectangle);
                 }
             }
         }
 
 
-        const cameraControls = new OrbitControls(camera, renderer.domElement);
+        const cameraControls = new OrbitControls(this.camera, this.renderer.domElement);
 
 
-        // const controls = new DragControls(rectangles, camera, renderer.domElement);
+        // const controls = new DragControls(rectangles, this.camera, renderer.domElement);
         // controls.addEventListener('dragstart', function (event) {
         //     event.object.material.emissive.set(0xaaaaaa);
         // });
@@ -57,6 +71,7 @@ export default class BackgroundAnimationTiles extends React.Component {
         // });
 
         generateRectangles();
+
         const pointer = new THREE.Vector2();
         function onPointerMove(event) {
             pointer.x = (event.clientX / document.body.clientWidth) * 2 - 1;
@@ -68,9 +83,9 @@ export default class BackgroundAnimationTiles extends React.Component {
         window.addEventListener('pointermove', onPointerMove);
         const light = new THREE.PointLight(0xffffff, 10, 0, 0);
         light.position.set(-10, 25, 10);
-        scene.add(light);
+        this.scene.add(light);
 
-        function animate(params) {
+        const animate = (params) => {
             requestAnimationFrame(animate);
             const time = Date.now() * 0.001;
             const radius = 35;
@@ -81,10 +96,10 @@ export default class BackgroundAnimationTiles extends React.Component {
                 const distance = Math.sqrt(Math.pow(element.position.x - pointer.x, 2) + Math.pow(element.position.z + pointer.y, 2));
                 element.position.y = 10 - (distance / 5);
             }
-            renderer.render(scene, camera);
+            this.renderer.render(this.scene, this.camera);
         }
         animate();
-        document.body.appendChild(renderer.domElement);
+        document.body.appendChild(this.renderer.domElement);
     }
 
     render() {
