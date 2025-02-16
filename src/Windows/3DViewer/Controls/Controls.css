@@ -72,7 +72,8 @@ label {
     grid-column: span 2;
 }
 
-.control-item input[type="checkbox"] {
+.control-item input[type="checkbox"],
+.control-item input[type="color"] {
     height: 100%;
     justify-self: end;
     grid-column: 4;
@@ -80,6 +81,7 @@ label {
 
 .control-item input[type="number"]:focus,
 .control-item input[type="range"]:focus,
-.control-item input[type="text"]:focus {
+.control-item input[type="text"]:focus,
+.control-item input[type="color"]:focus {
     outline: none;
 }

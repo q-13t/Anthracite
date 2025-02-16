@@ -16,15 +16,25 @@
 }
 
 .Viewer-Controls::-webkit-scrollbar,
-.Object-Selector-Container::-webkit-scrollbar {
+.Object-Selector-Container::-webkit-scrollbar,
+.Texture-Canvas::-webkit-scrollbar {
     width: 5px;
     height: 8px;
     background-color: var(--hover-color);
 }
 
 .Viewer-Controls::-webkit-scrollbar-thumb,
-.Object-Selector-Container::-webkit-scrollbar-thumb {
+.Object-Selector-Container::-webkit-scrollbar-thumb,
+.Texture-Canvas::-webkit-scrollbar-thumb {
     background: var(--border-color);
+}
+
+.Texture-Canvas {
+    width: calc(100% - 10px);
+    padding: 5px;
+    margin: 0px;
+    overflow: scroll;
+    height: 40vh;
 }
 
 .Scene-controls {

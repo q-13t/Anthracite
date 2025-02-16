@@ -9,7 +9,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import DownArrow from "../../assets/DownArrow.svg";
 import UpArrow from '../../assets/UpArrow.svg';
-import PlusImg from '../../assets/Plus.svg';
+import { parabola } from "three/tsl";
 
 export default class ThreeDViewer extends React.Component {
     constructor(props) {
@@ -19,10 +19,14 @@ export default class ThreeDViewer extends React.Component {
         this.willUnmount = false;
         this.resizeObserver = null;
 
+        this.textureZoom = 1;
+        this.drawingData = { prevX: 0, prevY: 0, currX: 0, currY: 0, color: null, size: 5, flag: false, dot_flag: false };
+
         this.camera = null;
         this.scene = null;
         this.renderer = null;
         this.selectedObject = null;
+        this.textureCanvas = null;
         this.state = {
         };
     }
@@ -37,9 +41,25 @@ export default class ThreeDViewer extends React.Component {
         this.scene = null;
         this.renderer = null;
         this.selectedObject = null;
+        this.textureCanvas.removeEventListener('wheel', this.ZoomInCanvas.bind(this));
+        this.textureCanvas.removeEventListener("mousemove", this.findXY.bind(this, "Move"));
+        this.textureCanvas.removeEventListener("mouseup", this.findXY.bind(this, "Up"));
+        this.textureCanvas.removeEventListener("mousedown", this.findXY.bind(this, "Down"));
+        this.textureCanvas.removeEventListener("mouseout", this.findXY.bind(this, "Out"));
+        this.textureCanvas = null;
     }
 
     componentDidMount() {
+        this.textureCanvas = document.querySelector(`canvas[canvas-id="${this.props.id + "Texture"}"]`);
+        this.textureCanvas.addEventListener('wheel', this.ZoomInCanvas.bind(this));
+        this.textureCanvas.addEventListener("mousemove", this.findXY.bind(this, "Move"));
+        this.textureCanvas.addEventListener("mouseup", this.findXY.bind(this, "Up"));
+        this.textureCanvas.addEventListener("mousedown", this.findXY.bind(this, "Down"));
+        this.textureCanvas.addEventListener("mouseout", this.findXY.bind(this, "Out"));
+
+        const canv_context = this.textureCanvas.getContext('2d');
+        canv_context.fillStyle = 'white';
+        canv_context.fillRect(0, 0, this.textureCanvas.width, this.textureCanvas.height);
         let canvas = document.querySelector(`canvas[canvas-id="${this.props.id}"]`);
         this.available_height = canvas.offsetWidth * 0.75;
         this.available_width = canvas.offsetHeight;
@@ -176,43 +196,163 @@ export default class ThreeDViewer extends React.Component {
         }
     }
 
+    drawTexture(width, height) {
+        try {
+            const ctx = this.textureCanvas.getContext("2d");
+            if (this.selectedObject.material.map && this.selectedObject.material.map.source) {
+                const data = this.selectedObject.material.map.source.data;
+
+                const backupCanvas = document.createElement("canvas");
+                backupCanvas.width = data.width;
+                backupCanvas.height = data.height;
+                const backupCtx = backupCanvas.getContext("2d");
+                backupCtx.drawImage(data, 0, 0, backupCanvas.width, backupCanvas.height);
+
+                this.textureCanvas.width = width || data.width;
+                this.textureCanvas.height = height || data.height;
+
+                ctx.clearRect(0, 0, this.textureCanvas.width, this.textureCanvas.height);
+
+                ctx.drawImage(backupCanvas, 0, 0, this.textureCanvas.width, this.textureCanvas.height);
+            }
+        } catch (error) {
+            // Fuck it we ball
+            console.log(error);
+        }
+    }
+
     selectObject(object) {
         this.selectedObject = object;
+        this.drawTexture();
         this.forceUpdate();
     }
 
     addObject(type) {
-        let object;
-        switch (type) {
-            case "Cube": {
-                object = new THREE.Mesh(
-                    new THREE.BoxGeometry(5, 5, 5),
-                )
-                object.name = "Cube";
-                break;
+        new THREE.TextureLoader().load('/Basic Gray.png', (texture) => {
+            let object;
+            switch (type) {
+                case "Cube": {
+                    object = new THREE.Mesh(
+                        new THREE.BoxGeometry(5, 5, 5),
+                    )
+                    object.name = "Cube";
+                    break;
+                }
+                case "Cone": {
+                    object = new THREE.Mesh(
+                        new THREE.ConeGeometry(5, 5, 5),
+                    )
+                    object.name = "Cone";
+                    break;
+                }
+                case "Sphere": {
+                    object = new THREE.Mesh(
+                        new THREE.SphereGeometry(5, 32, 32),
+                    );
+                    object.name = "Sphere";
+                    break;
+                }
             }
-            case "Cone": {
-                object = new THREE.Mesh(
-                    new THREE.ConeGeometry(5, 5, 5),
-                )
-                object.name = "Cone";
-                break;
-            }
-            case "Sphere": {
-                object = new THREE.Mesh(
-                    new THREE.SphereGeometry(5, 32, 32),
-                );
-                object.name = "Sphere";
-                break;
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1, 1);
+            texture.colorSpace = THREE.SRGBColorSpace;
+            object.material = new THREE.MeshStandardMaterial({ map: texture });
+            object.material.needsUpdate = true;
+            object.position.set(0, 0, 0);
+            object.rotation.set(0, 0, 0);
+            object.scale.set(1, 1, 1);
+            object.castShadow = true;
+            object.receiveShadow = true;
+            this.scene.add(object);
+            this.forceUpdate();
+        });
+    }
+
+
+
+    ZoomInCanvas(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.deltaY < 0) {
+            this.textureZoom += 0.1;
+        } else {
+            this.textureZoom -= 0.1;
+        }
+        this.drawTexture(this.textureCanvas.width * this.textureZoom, this.textureCanvas.height * this.textureZoom);
+        this.textureZoom = 1;
+        this.forceUpdate();
+    }
+
+    selectColor(e) {
+        this.drawingData.color = e.target.value;
+    }
+
+    draw(ctx) {
+        ctx.beginPath();
+        ctx.moveTo(this.drawingData.prevX, this.drawingData.prevY);
+        ctx.lineTo(this.drawingData.currX, this.drawingData.currY);
+        ctx.strokeStyle = this.drawingData.color;
+        ctx.lineWidth = this.drawingData.size;
+        ctx.stroke();
+        ctx.closePath();
+
+
+        if (this.selectedObject) {
+            const texture = new THREE.Texture(this.textureCanvas);
+            texture.needsUpdate = true;
+            texture.colorSpace = THREE.SRGBColorSpace;
+            this.selectedObject.material.map = texture;
+            this.selectedObject.material.needsUpdate = true;
+        }
+    }
+
+    findXY(res, event) {
+        const ctx = this.textureCanvas.getContext('2d');
+        const container = document.querySelector(`[texture-container="${this.props.id}TextureContainer"]`);
+        const parent = document.querySelector(`[three-d-viewer="${this.props.id}"]`).getBoundingClientRect();
+
+
+        if (res == 'Down') {
+            this.drawingData.prevX = this.drawingData.currX;
+            this.drawingData.prevY = this.drawingData.currY;
+            this.drawingData.currX = event.clientX - this.textureCanvas.offsetLeft + container.scrollLeft - parent.x;
+            this.drawingData.currY = event.clientY - this.textureCanvas.offsetTop + container.scrollTop - parent.y + 20;
+
+
+            this.drawingData.flag = true;
+            this.drawingData.dot_flag = true;
+            if (this.drawingData.dot_flag) {
+                ctx.beginPath();
+                ctx.fillStyle = this.drawingData.color;
+                ctx.fillRect(this.drawingData.currX, this.drawingData.currY, 2, 2);
+                ctx.closePath();
+                this.drawingData.dot_flag = false;
             }
         }
-        object.material = new THREE.MeshBasicMaterial({ color: 0x404040 });
-        object.position.set(0, 0, 0);
-        object.rotation.set(0, 0, 0);
-        object.scale.set(1, 1, 1);
-        object.castShadow = true;
-        object.receiveShadow = true;
-        this.scene.add(object);
+        if (res == 'Up' || res == "Out") {
+            this.drawingData.flag = false;
+            if (this.selectedObject) {
+
+                var image = new Image();
+                image.id = "pic";
+                image.src = this.textureCanvas.toDataURL();
+                const texture = new THREE.Texture(image);
+                texture.needsUpdate = true;
+                texture.colorSpace = THREE.SRGBColorSpace;
+                this.selectedObject.material.map = texture;
+                this.selectedObject.material.needsUpdate = true;
+            }
+        }
+        if (res == 'Move') {
+            if (this.drawingData.flag) {
+                this.drawingData.prevX = this.drawingData.currX;
+                this.drawingData.prevY = this.drawingData.currY;
+                this.drawingData.currX = event.clientX - this.textureCanvas.offsetLeft + container.scrollLeft - parent.x;
+                this.drawingData.currY = event.clientY - this.textureCanvas.offsetTop + container.scrollTop - parent.y + 20;
+                this.draw(ctx);
+            }
+        }
         this.forceUpdate();
     }
 
@@ -286,6 +426,25 @@ export default class ThreeDViewer extends React.Component {
                         </div>
                     </div>
 
+                    <div className="Scene-controls">
+                        <div className="Control-Header" onClick={() => { this.collapseItem(this.props.id + "Texture") }}>
+                            <p>Texture</p>
+                            <img caller-id={this.props.id + "Texture"} src={DownArrow} alt="Collapse/Expand" />
+                        </div>
+                        <div control-id={this.props.id + "Texture"} className="Control-Container collapsed">
+                            <div texture-container={this.props.id + "TextureContainer"} className="Texture-Canvas">
+                                <canvas canvas-id={this.props.id + "Texture"} className="Control-Item"></canvas>
+                            </div>
+                            <div className="Texture-Color-Container">
+                                <div className="control-item">
+                                    <label htmlFor="Texture-Color">Texturing Color</label>
+                                    <input type="color" name="Texture-Color" id="Texture-Color" onChange={this.selectColor.bind(this)} />
+                                </div>
+                                <br></br>
+                                <InputManager object={this.drawingData} k="size" key={this.props.id + "TextureSize"} />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );

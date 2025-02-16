@@ -7,7 +7,9 @@ const ObjectSelectionControl = ({ object, selectObject, selectedObject }) => {
         } else {
             object.parent.remove(object);
         }
-        if (selectedObject === object) selectObject(null);
+        if (selectedObject === object) {
+            selectObject(null);
+        }
     }
 
     return (
