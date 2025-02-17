@@ -9,7 +9,6 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import DownArrow from "../../assets/DownArrow.svg";
 import UpArrow from '../../assets/UpArrow.svg';
-import { parabola } from "three/tsl";
 
 export default class ThreeDViewer extends React.Component {
     constructor(props) {
@@ -356,6 +355,34 @@ export default class ThreeDViewer extends React.Component {
         this.forceUpdate();
     }
 
+    handleTextureDrop(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.dataTransfer.files && event.dataTransfer.files.length > 0 && this.selectedObject) {
+            const file = event.dataTransfer.files[0];
+            if ((file.type !== "image/png") && (file.type !== "image/jpeg")) {
+                alert("Invalid file type. Please drop a PNG or JPEG image.");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = () => {
+                const image = new Image();
+                image.src = reader.result;
+                image.onload = () => {
+                    const texture = new THREE.Texture(image);
+                    texture.needsUpdate = true;
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    this.selectedObject.material.map = texture;
+                    this.selectedObject.material.needsUpdate = true;
+                    this.drawTexture();
+                    this.forceUpdate();
+
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
     render() {
         return (
             <div three-d-viewer={this.props.id} className="ThreeDViewer">
@@ -432,7 +459,7 @@ export default class ThreeDViewer extends React.Component {
                             <img caller-id={this.props.id + "Texture"} src={DownArrow} alt="Collapse/Expand" />
                         </div>
                         <div control-id={this.props.id + "Texture"} className="Control-Container collapsed">
-                            <div texture-container={this.props.id + "TextureContainer"} className="Texture-Canvas">
+                            <div texture-container={this.props.id + "TextureContainer"} className="Texture-Canvas" onDrop={this.handleTextureDrop.bind(this)} onDragOver={(event) => { event.preventDefault(); event.stopPropagation(); }}>
                                 <canvas canvas-id={this.props.id + "Texture"} className="Control-Item"></canvas>
                             </div>
                             <div className="Texture-Color-Container">
@@ -446,7 +473,7 @@ export default class ThreeDViewer extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 }
