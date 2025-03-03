@@ -115,7 +115,8 @@ export default class ThreeDViewer extends React.Component {
                 object.rotation.set(-3, 0, 0);
                 object.name = 'Skull';
                 this.scene.add(object);
-                this.forceUpdate();
+                console.log(object.children[0].geometry.attributes.uv);
+                this.selectObject(object.children[0]);
             });
         });
 
@@ -198,8 +199,11 @@ export default class ThreeDViewer extends React.Component {
     drawTexture(width, height) {
         try {
             const ctx = this.textureCanvas.getContext("2d");
-            if (this.selectedObject.material.map && this.selectedObject.material.map.source) {
+            if (this.selectedObject.material && this.selectedObject.material.map && this.selectedObject.material.map.source) {
                 const data = this.selectedObject.material.map.source.data;
+                if (!data) {
+                    return;
+                }
 
                 const backupCanvas = document.createElement("canvas");
                 backupCanvas.width = data.width;
@@ -256,15 +260,16 @@ export default class ThreeDViewer extends React.Component {
             texture.wrapT = THREE.RepeatWrapping;
             texture.repeat.set(1, 1);
             texture.colorSpace = THREE.SRGBColorSpace;
-            object.material = new THREE.MeshStandardMaterial({ map: texture });
+            object.material = new THREE.MeshBasicMaterial({ map: texture });
             object.material.needsUpdate = true;
+            object.material.transparent = true;
             object.position.set(0, 0, 0);
             object.rotation.set(0, 0, 0);
             object.scale.set(1, 1, 1);
             object.castShadow = true;
             object.receiveShadow = true;
             this.scene.add(object);
-            this.forceUpdate();
+            this.selectObject(object);
         });
     }
 
@@ -302,6 +307,7 @@ export default class ThreeDViewer extends React.Component {
             texture.needsUpdate = true;
             texture.colorSpace = THREE.SRGBColorSpace;
             this.selectedObject.material.map = texture;
+            this.selectedObject.material.transparent = true;
             this.selectedObject.material.needsUpdate = true;
         }
     }
@@ -331,17 +337,9 @@ export default class ThreeDViewer extends React.Component {
         }
         if (res == 'Up' || res == "Out") {
             this.drawingData.flag = false;
-            if (this.selectedObject) {
-
-                var image = new Image();
-                image.id = "pic";
-                image.src = this.textureCanvas.toDataURL();
-                const texture = new THREE.Texture(image);
-                texture.needsUpdate = true;
-                texture.colorSpace = THREE.SRGBColorSpace;
-                this.selectedObject.material.map = texture;
-                this.selectedObject.material.needsUpdate = true;
-            }
+            var image = new Image();
+            image.src = this.textureCanvas.toDataURL();
+            this.setTexture(image);
         }
         if (res == 'Move') {
             if (this.drawingData.flag) {
@@ -353,6 +351,27 @@ export default class ThreeDViewer extends React.Component {
             }
         }
         this.forceUpdate();
+    }
+
+    setTexture(image) {
+        if (this.selectedObject) {
+            const texture = new THREE.Texture(image);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.minFilter = THREE.LinearMipMapLinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.needsUpdate = true;
+
+            if (this.selectedObject.material && this.selectedObject.material.map) {
+                this.selectedObject.material.map.dispose();
+                this.selectedObject.material.map = texture;
+                this.selectedObject.material.transparent = true;
+                this.selectedObject.material.castShadow = true;
+                this.selectedObject.material.receiveShadow = true;
+                this.selectedObject.material.needsUpdate = true;
+            }
+        }
     }
 
     handleTextureDrop(event) {
@@ -369,24 +388,127 @@ export default class ThreeDViewer extends React.Component {
                 const image = new Image();
                 image.src = reader.result;
                 image.onload = () => {
-                    const texture = new THREE.Texture(image);
-                    texture.needsUpdate = true;
-                    texture.colorSpace = THREE.SRGBColorSpace;
-                    this.selectedObject.material.map = texture;
-                    this.selectedObject.material.needsUpdate = true;
+                    this.setTexture(image);
                     this.drawTexture();
                     this.forceUpdate();
-
                 }
             }
             reader.readAsDataURL(file);
         }
     }
 
+    handleDragOver(event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+
+    handleObjectDrop(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+
+        const handleFile = async (file) => {
+            const fileType = file.name.split(".")[1];
+            if (fileType === "") {
+                const re = new RegExp("\\.(\\w+)$");
+                fileType = re.exec(file.name)[1];
+            }
+            const reader = new FileReader();
+
+            switch (fileType) {
+                case "obj": {
+                    reader.onload = () => {
+                        new THREE.TextureLoader().load('/Basic Gray.png', (texture) => {
+                            let object = new OBJLoader().parse(reader.result);
+                            for (const child of object.children) {
+                                texture.wrapS = THREE.RepeatWrapping;
+                                texture.wrapT = THREE.RepeatWrapping;
+                                child.material = new THREE.MeshStandardMaterial({ map: texture, side: THREE.DoubleSide });
+                                child.material.needsUpdate = true;
+                                child.material.transparent = true;
+                                child.position.set(0, 0, 0);
+                                child.rotation.set(0, 0, 0);
+                                child.scale.set(1, 1, 1);
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                                child.geometry.computeBoundingBox();
+                                child.geometry.computeBoundingSphere();
+                                child.geometry.computeVertexNormals();
+                                child.geometry.computeTangents();
+                                console.log("Car UVs:", child.geometry.attributes.uv);
+                                const geometry = child.geometry;
+                                geometry.computeBoundingBox();
+                                geometry.computeVertexNormals();
+                                if (!child.geometry.attributes.uv || child.geometry.attributes.uv.array.every(v => (v === 0 || v === 1))) {
+                                    const positions = geometry.attributes.position.array;
+                                    const uvs = new Float32Array(positions.length / 3 * 2);
+                                    for (let i = 0; i < positions.length / 3; i++) {
+                                        uvs[i * 2] = (positions[i * 3] - geometry.boundingBox.min.x) / geometry.boundingBox.max.x;
+                                        uvs[i * 2 + 1] = (positions[i * 3 + 1] - geometry.boundingBox.min.y) / geometry.boundingBox.max.y;
+                                    }
+                                    geometry.setAttribute("uv", new THREE.BufferAttribute(uvs, 2));
+                                    geometry.uvsNeedUpdate = true;
+                                }
+                                this.scene.add(object);
+                                this.selectObject(object);
+                            }
+                        });
+                    }
+
+                    reader.readAsText(file);
+                    break;
+                }
+                case "mtl": {
+                    reader.onload = () => {
+                        const material = new MTLLoader().parse(reader.result);
+                        console.log(material);
+
+                        this.selectedObject.material = material.materials[0];
+                        this.forceUpdate();
+                    }
+                    reader.readAsText(file);
+                    break;
+                }
+                case "png":
+                case "jpeg":
+                case "jpg": {
+                    reader.onload = () => {
+                        const image = new Image();
+                        image.src = reader.result;
+                        image.onload = () => {
+                            this.setTexture(image);
+                            this.drawTexture();
+                            this.forceUpdate();
+                        }
+                    }
+                    reader.readAsDataURL(file);
+                    break;
+                }
+
+                default:
+                    alert("Invalid file type. Please drop a OBJ, MTL, PNG, JPEG, JPG file.");
+                    break;
+            }
+        }
+
+        if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+            let items = event.dataTransfer.items;
+            if (items.isDirectory) {
+                alert("Folder dropping is not supported. Please drop a file.");
+            } else {
+                for (const file of event.dataTransfer.files) {
+                    handleFile(file);
+                }
+
+            }
+        }
+    }
+
     render() {
         return (
             <div three-d-viewer={this.props.id} className="ThreeDViewer">
-                <canvas canvas-id={this.props.id} className="Viewer-Canvas"></canvas>
+                <canvas canvas-id={this.props.id} className="Viewer-Canvas" onDrop={this.handleObjectDrop.bind(this)} onDragOver={this.handleDragOver.bind(this)}></canvas>
                 <div className="Object-Selector">
                     <img caller-id={this.props.id + '-' + "Object-Select"} src={DownArrow} className="Object-Selector-Expander" alt="" onClick={() => { this.expandObjectSelector(this.props.id + '-' + "Object-Select") }} />
                     <div control-id={this.props.id + '-' + "Object-Select"} className="Object-Selector-Container Selector-Collapsed" >
@@ -459,7 +581,7 @@ export default class ThreeDViewer extends React.Component {
                             <img caller-id={this.props.id + "Texture"} src={DownArrow} alt="Collapse/Expand" />
                         </div>
                         <div control-id={this.props.id + "Texture"} className="Control-Container collapsed">
-                            <div texture-container={this.props.id + "TextureContainer"} className="Texture-Canvas" onDrop={this.handleTextureDrop.bind(this)} onDragOver={(event) => { event.preventDefault(); event.stopPropagation(); }}>
+                            <div texture-container={this.props.id + "TextureContainer"} className="Texture-Canvas" onDrop={this.handleTextureDrop.bind(this)} onDragOver={this.handleDragOver.bind(this)}>
                                 <canvas canvas-id={this.props.id + "Texture"} className="Control-Item"></canvas>
                             </div>
                             <div className="Texture-Color-Container">
