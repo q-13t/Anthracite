@@ -115,8 +115,6 @@ export default class ThreeDViewer extends React.Component {
                 object.rotation.set(-3, 0, 0);
                 object.name = 'Skull';
                 this.scene.add(object);
-                console.log(object.children[0].geometry.attributes.uv);
-                this.selectObject(object.children[0]);
             });
         });
 
