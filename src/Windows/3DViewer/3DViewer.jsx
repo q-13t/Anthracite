@@ -115,8 +115,6 @@ export default class ThreeDViewer extends React.Component {
                 object.rotation.set(-3, 0, 0);
                 object.name = 'Skull';
                 this.scene.add(object);
-                console.log(object.children[0].geometry.attributes.uv);
-                this.selectObject(object.children[0]);
             });
         });
 
@@ -209,13 +207,15 @@ export default class ThreeDViewer extends React.Component {
                 backupCanvas.width = data.width;
                 backupCanvas.height = data.height;
                 const backupCtx = backupCanvas.getContext("2d");
+                backupCtx.imageSmoothingEnabled = true;
+                backupCtx.imageSmoothingQuality = 'high';
                 backupCtx.drawImage(data, 0, 0, backupCanvas.width, backupCanvas.height);
 
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 this.textureCanvas.width = width || data.width;
                 this.textureCanvas.height = height || data.height;
-
                 ctx.clearRect(0, 0, this.textureCanvas.width, this.textureCanvas.height);
-
                 ctx.drawImage(backupCanvas, 0, 0, this.textureCanvas.width, this.textureCanvas.height);
             }
         } catch (error) {
