@@ -9,9 +9,10 @@ const InputManager = ({ object, k, collapseItem, selectObject, selectedObject, s
 
 
         if (object !== null && k === null) {
-            if (object.type === "Group") {
+            const type = object.type;
+            if (type === "Group") {
                 return (<VectorControl key={subKey} subKey={subKey} object={object} k={'children'} collapseItem={collapseItem} subname={object.name ? object.name : object.constructor.name} selectObject={selectObject} selectedObject={selectedObject} />)
-            } else if (object.type === "GridHelper" || object.type === "AmbientLight" || object.type === "DirectionalLight" || object.type === "DirectionalLightHelper" || object.type === "Mesh") {
+            } else if (type === "GridHelper" || type === "AmbientLight" || type === "DirectionalLight" || type === "DirectionalLightHelper" || type === "Mesh" || type === "Object3D" || type === "LineSegments") {
                 return (<ObjectSelectionControl object={object} selectObject={selectObject} selectedObject={selectedObject} />)
             }
         } else if (object === undefined && k === undefined) { return; }

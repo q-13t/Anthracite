@@ -9,6 +9,9 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 import DownArrow from "../../assets/DownArrow.svg";
 import UpArrow from '../../assets/UpArrow.svg';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { saveAs } from "file-saver";
+import { OBJExporter } from 'three/addons/exporters/OBJExporter.js';
 
 export default class ThreeDViewer extends React.Component {
     constructor(props) {
@@ -489,7 +492,15 @@ export default class ThreeDViewer extends React.Component {
                     reader.readAsDataURL(file);
                     break;
                 }
-
+                case "gltf": {
+                    reader.onload = () => {
+                        new GLTFLoader().parse(reader.result, "", (data) => {
+                            this.scene = data.scene;
+                        });
+                    }
+                    reader.readAsText(file);
+                    break;
+                }
                 default:
                     alert("Invalid file type. Please drop a OBJ, MTL, PNG, JPEG, JPG file.");
                     break;
@@ -509,9 +520,16 @@ export default class ThreeDViewer extends React.Component {
         }
     }
 
+    download() {
+        const exporter = new OBJExporter();
+        const data = exporter.parse(this.scene);
+        saveAs(new Blob([data], { type: "text/plain;charset=utf-8" }), "Anthracite Objects.obj");
+    }
+
     render() {
         return (
             <div three-d-viewer={this.props.id} className="ThreeDViewer">
+                {/* Object Selector */}
                 <canvas canvas-id={this.props.id} className="Viewer-Canvas" onDrop={this.handleObjectDrop.bind(this)} onDragOver={this.handleDragOver.bind(this)}></canvas>
                 <div className="Object-Selector">
                     <img caller-id={this.props.id + '-' + "Object-Select"} src={DownArrow} className="Object-Selector-Expander" alt="" onClick={() => { this.expandObjectSelector(this.props.id + '-' + "Object-Select") }} />
@@ -538,6 +556,8 @@ export default class ThreeDViewer extends React.Component {
                         }
                     </div>
                 </div>
+
+                {/* Camera */}
                 <div className="Viewer-Controls">
                     <div className="Scene-controls">
                         <div className="Control-Header" onClick={() => { this.collapseItem(this.props.id + "Camera") }}>
@@ -548,6 +568,8 @@ export default class ThreeDViewer extends React.Component {
                             {this.camera && Object.keys(this.camera).map((key, index) => { return (<InputManager key={this.props.id + index + key} subKey={this.props.id + '-' + index + '-' + key.type} object={this.camera} k={key} collapseItem={this.collapseItem.bind(this)} />); })}
                         </div>
                     </div>
+
+                    {/* Scene */}
                     <div className="Scene-controls">
                         <div className="Control-Header" onClick={() => { this.collapseItem(this.props.id + "Scene") }}>
                             <p>Scene</p>
@@ -563,6 +585,8 @@ export default class ThreeDViewer extends React.Component {
                             }
                         </div>
                     </div>
+
+                    {/* Object */}
                     <div className="Scene-controls">
                         <div className="Control-Header" onClick={() => { this.collapseItem(this.props.id + "Object") }}>
                             <p>Object</p>
@@ -579,6 +603,7 @@ export default class ThreeDViewer extends React.Component {
                         </div>
                     </div>
 
+                    {/* Texture */}
                     <div className="Scene-controls">
                         <div className="Control-Header" onClick={() => { this.collapseItem(this.props.id + "Texture") }}>
                             <p>Texture</p>
@@ -597,6 +622,9 @@ export default class ThreeDViewer extends React.Component {
                                 <InputManager object={this.drawingData} k="size" key={this.props.id + "TextureSize"} />
                             </div>
                         </div>
+                    </div>
+                    <div className="Control-Header" onClick={this.download.bind(this)}>
+                        Download as GLTF
                     </div>
                 </div>
             </div >
