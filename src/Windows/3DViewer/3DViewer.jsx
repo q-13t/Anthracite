@@ -424,35 +424,39 @@ export default class ThreeDViewer extends React.Component {
                             for (const child of object.children) {
                                 texture.wrapS = THREE.RepeatWrapping;
                                 texture.wrapT = THREE.RepeatWrapping;
-                                child.material = new THREE.MeshStandardMaterial({ map: texture, side: THREE.DoubleSide });
+
+                                child.material = new THREE.MeshStandardMaterial({
+                                    map: texture,
+                                    side: THREE.DoubleSide,
+                                    transparent: true,
+                                    alphaTest: 0.3,
+                                });
                                 child.material.needsUpdate = true;
-                                child.material.transparent = true;
                                 child.position.set(0, 0, 0);
                                 child.rotation.set(0, 0, 0);
                                 child.scale.set(1, 1, 1);
                                 child.castShadow = true;
                                 child.receiveShadow = true;
-                                child.geometry.computeBoundingBox();
-                                child.geometry.computeBoundingSphere();
-                                child.geometry.computeVertexNormals();
-                                child.geometry.computeTangents();
-                                console.log("Car UVs:", child.geometry.attributes.uv);
                                 const geometry = child.geometry;
                                 geometry.computeBoundingBox();
+                                geometry.computeBoundingSphere();
                                 geometry.computeVertexNormals();
-                                if (!child.geometry.attributes.uv || child.geometry.attributes.uv.array.every(v => (v === 0 || v === 1))) {
+                                geometry.computeTangents();
+
+
+                                if (!geometry.attributes.uv || geometry.attributes.uv.array.every(v => v === 0)) {
                                     const positions = geometry.attributes.position.array;
                                     const uvs = new Float32Array(positions.length / 3 * 2);
                                     for (let i = 0; i < positions.length / 3; i++) {
-                                        uvs[i * 2] = (positions[i * 3] - geometry.boundingBox.min.x) / geometry.boundingBox.max.x;
-                                        uvs[i * 2 + 1] = (positions[i * 3 + 1] - geometry.boundingBox.min.y) / geometry.boundingBox.max.y;
+                                        uvs[i * 2] = (positions[i * 3] - geometry.boundingBox.min.x) / (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+                                        uvs[i * 2 + 1] = (positions[i * 3 + 1] - geometry.boundingBox.min.y) / (geometry.boundingBox.max.y - geometry.boundingBox.min.y);
                                     }
                                     geometry.setAttribute("uv", new THREE.BufferAttribute(uvs, 2));
                                     geometry.uvsNeedUpdate = true;
                                 }
-                                this.scene.add(object);
-                                this.selectObject(object);
                             }
+                            this.scene.add(object);
+                            this.selectObject(object);
                         });
                     }
 
