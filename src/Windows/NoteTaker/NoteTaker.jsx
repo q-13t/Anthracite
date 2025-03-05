@@ -4,7 +4,7 @@ import { Marked } from "marked";
 import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const marked = new Marked(
     markedHighlight({
@@ -61,7 +61,7 @@ const NoteTaker = ({ id }) => {
     }
 
     const parseText = () => {
-        document.getElementById(`Notes-MD-` + id).innerHTML = marked.parse(document.getElementById(`Notes-plain-text-` + id).value);
+        document.getElementById(`Notes-MD-` + id).innerHTML = marked.parse(document.getElementById(`Notes-plain-text-` + id).value).replace("disabled", "");
     }
 
     const changeView = (event, type) => {
