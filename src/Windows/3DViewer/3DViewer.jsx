@@ -521,9 +521,17 @@ export default class ThreeDViewer extends React.Component {
     }
 
     download() {
-        const exporter = new OBJExporter();
-        const data = exporter.parse(this.scene);
-        saveAs(new Blob([data], { type: "text/plain;charset=utf-8" }), "Anthracite Objects.obj");
+        try {
+            const exporter = new OBJExporter();
+            let meshes = this.scene;
+            const stored = [this.scene.children[0], this.scene.children[1], this.scene.children[2], this.scene.children[3]];
+            meshes.children.splice(0, 4);
+            const data = exporter.parse(meshes);
+            this.scene.children = [...stored, ...meshes.children];
+            saveAs(new Blob([data], { type: "text/plain;charset=utf-8" }), "Anthracite Objects.obj");
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     render() {
