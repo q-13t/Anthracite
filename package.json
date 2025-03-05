@@ -5,6 +5,9 @@
   "dependencies": {
     "cra-template": "1.2.0",
     "file-saver": "^2.0.5",
+    "highlight.js": "^11.11.1",
+    "marked": "^15.0.7",
+    "marked-highlight": "^2.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "5.0.1",

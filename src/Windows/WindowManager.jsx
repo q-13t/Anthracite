@@ -6,6 +6,7 @@ import WindowTile from './WindowTile.jsx';
 import StartTile from './StartTile.jsx';
 import './WindowManager.css';
 import ThreeDViewer from './3DViewer/3DViewer.jsx';
+import NoteTaker from './NoteTaker/NoteTaker.jsx';
 
 export default class WindowManager extends React.Component {
 
@@ -61,9 +62,15 @@ export default class WindowManager extends React.Component {
 
     openWindow(windowType) {
         switch (windowType) {
-            case "test": {
+            case "Editor": {
                 this.Windows.push({
-                    params: new WindowsParams(this.windowId, 'test', 0, 0, 1024, 720, this.z_index++), child: <ThreeDViewer id={this.windowId} />
+                    params: new WindowsParams(this.windowId, 'Editor', 0, 0, 1024, 720, this.z_index++), child: <ThreeDViewer id={this.windowId} />
+                });
+                this.windowId++;
+                break;
+            } case "Notes": {
+                this.Windows.push({
+                    params: new WindowsParams(this.windowId, 'Notes', 0, 0, 1024, 720, this.z_index++), child: <NoteTaker id={this.windowId} />
                 });
                 this.windowId++;
                 break;
@@ -102,7 +109,8 @@ export default class WindowManager extends React.Component {
                 <div className='Navigation-Buttons'>
                     <div id='Start-Pane' className='Start-Pane'>
                         <div className='Start-Pane-Container'>
-                            <StartTile openWindow={this.openWindow.bind(this)} boundTo={"test"} />
+                            < StartTile openWindow={this.openWindow.bind(this)} boundTo={"Editor"} />
+                            <StartTile openWindow={this.openWindow.bind(this)} boundTo={"Notes"} />
                         </div>
                     </div>
                     <div id="Start-Button" className='Start-Button Tile-container' onClick={() => { this.StartPaneToggle() }}>
