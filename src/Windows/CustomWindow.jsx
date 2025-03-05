@@ -104,7 +104,6 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
         setState(properties);
         updateWindow(properties.id, properties);
         document.querySelector(`[maximize-id="${properties.id}"]`).src = properties.maximized ? Minimize_svg : Maximize_svg;
-        console.log(state, properties);
     }
 
     const handleResize = (event) => {
