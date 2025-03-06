@@ -61,7 +61,7 @@ const NoteTaker = ({ id }) => {
     }
 
     const parseText = () => {
-        document.getElementById(`Notes-MD-` + id).innerHTML = marked.parse(document.getElementById(`Notes-plain-text-` + id).value).replace("disabled", "");
+        document.getElementById(`Notes-MD-` + id).innerHTML = marked.parse(document.getElementById(`Notes-plain-text-` + id).value).replaceAll("disabled=\"\"", "");
     }
 
     const changeView = (event, type) => {
