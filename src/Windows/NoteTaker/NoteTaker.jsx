@@ -107,7 +107,29 @@ const NoteTaker = ({ id }) => {
         } else {
             md.scrollTop = (plain.scrollTop / (plain.scrollHeight - plain.clientHeight)) * (md.scrollHeight - md.clientHeight);
         }
+    }
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        var md = document.getElementById(`Notes-MD-` + id);
+        var plain = document.getElementById(`Notes-plain-text-` + id);
+        if (md === null || plain === null) {
+            return;
+        }
+        const file = e.dataTransfer.files[0];
+        let fileType = file.name.split(".");
+        fileType = fileType[fileType.length - 1];
+        if ((fileType !== "txt") && (fileType !== "md")) {
+            alert("Invalid file type. Please drop a TXT or MD file.");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            plain.value = reader.result;
+            document.getElementById(`Notes-MD-` + id).innerHTML = marked.parse(reader.result).replaceAll("disabled=\"\"", "");
+        }
+        reader.readAsText(file);
     }
 
     return (
@@ -125,7 +147,7 @@ const NoteTaker = ({ id }) => {
                 </div>
             </div>
             <div id={`Notes-Body-` + id} className="notes-body">
-                <textarea id={`Notes-plain-text-` + id} style={{ display: display.left }} onScroll={(e) => { adjustScrollPlain(e) }} className="notes-plain-text" onChange={parseText}></textarea>
+                <textarea id={`Notes-plain-text-` + id} onDrop={(e) => { handleDrop(e); }} style={{ display: display.left }} onScroll={(e) => { adjustScrollPlain(e) }} className="notes-plain-text" onChange={parseText}></textarea>
                 <div id={`Notes-MD-` + id} className="notes-md" style={{ display: display.right }}></div>
             </div>
         </div >
