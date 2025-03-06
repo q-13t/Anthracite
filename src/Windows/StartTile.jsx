@@ -1,8 +1,7 @@
 import React from 'react';
-import anthracite_svg from '../assets/Anthracite.svg';
 import './StartTile.css';
 
-const StartTile = ({ openWindow, boundTo }) => {
+const StartTile = ({ openWindow, boundTo, image }) => {
 
     const handleOpen = () => {
         openWindow(boundTo);
@@ -10,7 +9,7 @@ const StartTile = ({ openWindow, boundTo }) => {
 
     return (
         <div className='Start-Tile' onClick={() => { handleOpen() }}>
-            <img src={anthracite_svg} alt="" />
+            <img src={image} alt="" />
         </div>
     );
 }

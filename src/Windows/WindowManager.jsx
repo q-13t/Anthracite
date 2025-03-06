@@ -1,5 +1,6 @@
 import React from 'react';
 import anthracite_svg from '../assets/Anthracite.svg';
+import notes_svg from '../assets/Notes.svg';
 import WindowsParams from './WindowParams.ts';
 import CustomWindow from './CustomWindow.jsx';
 import WindowTile from './WindowTile.jsx';
@@ -64,13 +65,17 @@ export default class WindowManager extends React.Component {
         switch (windowType) {
             case "Editor": {
                 this.Windows.push({
-                    params: new WindowsParams(this.windowId, 'Editor', 0, 0, 1024, 720, this.z_index++), child: <ThreeDViewer id={this.windowId} />
+                    params: new WindowsParams(this.windowId, 'Editor', 0, 0, 1024, 720, this.z_index++),
+                    child: <ThreeDViewer id={this.windowId} />,
+                    image: anthracite_svg
                 });
                 this.windowId++;
                 break;
             } case "Notes": {
                 this.Windows.push({
-                    params: new WindowsParams(this.windowId, 'Notes', 0, 0, 1024, 720, this.z_index++), child: <NoteTaker id={this.windowId} />
+                    params: new WindowsParams(this.windowId, 'Notes', 0, 0, 1024, 720, this.z_index++),
+                    child: <NoteTaker id={this.windowId} />,
+                    image: notes_svg
                 });
                 this.windowId++;
                 break;
@@ -109,8 +114,8 @@ export default class WindowManager extends React.Component {
                 <div className='Navigation-Buttons'>
                     <div id='Start-Pane' className='Start-Pane'>
                         <div className='Start-Pane-Container'>
-                            < StartTile openWindow={this.openWindow.bind(this)} boundTo={"Editor"} />
-                            <StartTile openWindow={this.openWindow.bind(this)} boundTo={"Notes"} />
+                            <StartTile openWindow={this.openWindow.bind(this)} boundTo={"Editor"} image={anthracite_svg} />
+                            <StartTile openWindow={this.openWindow.bind(this)} boundTo={"Notes"} image={notes_svg} />
                         </div>
                     </div>
                     <div id="Start-Button" className='Start-Button Tile-container' onClick={() => { this.StartPaneToggle() }}>
@@ -121,7 +126,7 @@ export default class WindowManager extends React.Component {
                         {
                             this.Windows.map((data) => {
                                 return (
-                                    <WindowTile key={`Tile-` + data.params.id} window={data.params} updateWindow={this.updateWindow.bind(this)} />
+                                    <WindowTile key={`Tile-` + data.params.id} image={data.image} window={data.params} updateWindow={this.updateWindow.bind(this)} />
                                 );
                             })
                         }
