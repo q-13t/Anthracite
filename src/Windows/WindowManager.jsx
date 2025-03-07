@@ -25,8 +25,14 @@ export default class WindowManager extends React.Component {
         } else if (!document.getElementById('Start-Pane').contains(e.target) && this.startPaneState === 1) {
             this.StartPaneToggle();
         };
-        const intersected = this.Windows.find(w => w.params.x <= e.clientX && w.params.x + w.params.width >= e.clientX && w.params.y <= e.clientY && w.params.y + w.params.height >= e.clientY);
-        if (!intersected) return;
+        let intersected = this.Windows.filter(w => w.params.x <= e.clientX && w.params.x + w.params.width >= e.clientX && w.params.y <= e.clientY && w.params.y + w.params.height >= e.clientY);
+        if (intersected.length == 0) {
+            return;
+        } else if (intersected instanceof Array && intersected.length > 1) {
+            intersected = intersected.sort((a, b) => b.params.zIndex - a.params.zIndex)[0];
+        } else {
+            intersected = intersected[0];
+        }
         intersected.params.zIndex = this.z_index++;
         this.forceUpdate();
     }
