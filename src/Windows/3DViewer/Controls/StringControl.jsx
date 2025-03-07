@@ -9,7 +9,7 @@ const StringControl = ({ object, k }) => {
         return () => {
 
         };
-    }, [object[k], k, object]);
+    }, [object[k]]);
 
     const handleValueChange = (event) => {
         object[k] = event.target.value;

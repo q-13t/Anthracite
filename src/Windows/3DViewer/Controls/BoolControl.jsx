@@ -9,7 +9,7 @@ const BoolControl = ({ object, k }) => {
         return () => {
 
         };
-    }, [object[k], k, object]);
+    }, [object[k]]);
 
     const handleValueChange = () => {
         object[k] = !object[k];
