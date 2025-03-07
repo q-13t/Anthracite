@@ -1,70 +1,53 @@
-# Getting Started with Create React App
+# Anthracite
+Anthracite is a 3D client only editor\previewer that is available online.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Navigate to the demo: 💻 [Anthracite](https://q-13t.github.io/Anthracite/)
+___
 
-## Available Scripts
+# 🚨 Caution 🚨
+This is a pet project and should not be taken as a serious product and\or tutorial for learning 3D programming. Feel free to look at the code but be cautious that it was written by an amateur. And it definitely has bugs.
+___
 
-In the project directory, you can run:
+# 🏃‍♀️ How to run localy:
 
-### `npm start`
+1. Clone the repository
+    `git clone https://github.com/q-13t/Anthracite.git`
+2. Install packages
+    `npm install`
+3. Run the local serve
+    `npm start`
+4. Open a browser and navigate to `http://localhost:3000/`
+___
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# 🌟Features:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Dynamic background:
+The background is animated and changes based on the mouse position.
 
-### `npm test`
+## Multiple independent windows:
+You can open multiple windows at the same time. They all are independent and do not intersect with each other.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+## Creating \ Editing objects:
+You can create 3 default objects:
+- Cube
+- Sphere
+- Cone
+and you can import any `.obj` file. by drag and dropping the file into the window. You also can export the scene as an `.obj` file.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Creating \ Editing textures:
+You can create or alter the texture of the object by drawing straight on the canvas or drag and dropping the image into the window.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Dynamic Lighting:
+There are two light sources that are available to you to preview the objects: `Ambient` and `Directional`.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Taking Notes:
+You can take notes as plain text or as markdown and save them as `.txt` or `.md` files. Naturally you can drag and drop the text int editor to paste it instantly.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+___
+# 🧾Licensing:
+This project is licensed under the `MIT License`. See the LICENSE file for details.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# 🤗Any contributions and/or suggestions are welcomed!
