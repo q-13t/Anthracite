@@ -16,10 +16,14 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
     let dragging = false;
 
 
+
     useEffect(() => {
-        setState(properties);
         let resizeObserver = new ResizeObserver((element) => {
-            if (properties.maximized) return;
+            if (properties.maximized) {
+                return;
+            } else if (properties.width === element[0].contentRect.width && properties.height === element[0].contentRect.height) {
+                return;
+            }
             properties.width = element[0].contentRect.width;
             properties.height = element[0].contentRect.height;
             properties.height_prev = element[0].contentRect.width;
