@@ -106,6 +106,7 @@ const NoteTaker = ({ id }) => {
             return;
         } else {
             md.scrollTop = (plain.scrollTop / (plain.scrollHeight - plain.clientHeight)) * (md.scrollHeight - md.clientHeight);
+            md.scrollLeft = (plain.scrollLeft / (plain.scrollWidth - plain.clientWidth)) * (md.scrollWidth - md.clientWidth);
         }
     }
 
