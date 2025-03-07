@@ -160,7 +160,7 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
     }
 
     return (
-        <div window-id={properties.id} className='Window' res style={{ left: properties.x, top: properties.y, visibility: properties.visible ? 'visible' : 'hidden', zIndex: properties.zIndex, width: properties.width + "px", height: properties.height + "px", maxWidth: document.getElementById('Window-Frames').clientWidth - 10 + "px", maxHeight: document.getElementById('Window-Frames').clientHeight - 10 + "px" }} onMouseDown={(event) => { handleResize(event) }} onMouseMove={(event) => { showResizeHelp(event) }}>
+        <div window-id={properties.id} className='Window' style={{ left: properties.x, top: properties.y, visibility: properties.visible ? 'visible' : 'hidden', zIndex: properties.zIndex, width: properties.width + "px", height: properties.height + "px", maxWidth: document.getElementById('Window-Frames').clientWidth - 10 + "px", maxHeight: document.getElementById('Window-Frames').clientHeight - 10 + "px" }} onMouseDown={(event) => { handleResize(event) }} onMouseMove={(event) => { showResizeHelp(event) }}>
             <div className='Window-Header' >
                 <div className='Window-Title-Container' onDoubleClick={(event) => { handleWindowResizeClick() }} onMouseDown={(event) => { handleDragStart(event); }}>
                     <p className='Window-Title'>{properties.title}</p>
