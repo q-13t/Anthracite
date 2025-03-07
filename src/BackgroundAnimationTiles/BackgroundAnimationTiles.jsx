@@ -59,7 +59,8 @@ export default class BackgroundAnimationTiles extends React.Component {
         }
 
 
-        const cameraControls = new OrbitControls(this.camera, this.renderer.domElement);
+        // const cameraControls = 
+        new OrbitControls(this.camera, this.renderer.domElement);
 
 
         // const controls = new DragControls(rectangles, this.camera, renderer.domElement);

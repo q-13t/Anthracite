@@ -32,7 +32,7 @@ const CustomWindow = ({ window: properties, updateWindow, closeWindow, children 
         return () => {
             resizeObserver.disconnect();
         };
-    }, [properties]);
+    }, [properties, state, updateWindow]);
 
     const handleDragStart = (event) => {
         if (event.target === document.querySelector(`[window-id="${properties.id}"]`)) return;

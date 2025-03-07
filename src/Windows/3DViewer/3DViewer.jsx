@@ -258,6 +258,13 @@ export default class ThreeDViewer extends React.Component {
                     object.name = "Sphere";
                     break;
                 }
+                default: {
+                    object = new THREE.Mesh(
+                        new THREE.BoxGeometry(5, 5, 5),
+                    )
+                    object.name = "Cube";
+                    break;
+                }
             }
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
@@ -321,7 +328,7 @@ export default class ThreeDViewer extends React.Component {
         const parent = document.querySelector(`[three-d-viewer="${this.props.id}"]`).getBoundingClientRect();
 
 
-        if (res == 'Down') {
+        if (res === 'Down') {
             this.drawingData.prevX = this.drawingData.currX;
             this.drawingData.prevY = this.drawingData.currY;
             this.drawingData.currX = event.clientX - this.textureCanvas.offsetLeft + container.scrollLeft - parent.x;
@@ -338,13 +345,13 @@ export default class ThreeDViewer extends React.Component {
                 this.drawingData.dot_flag = false;
             }
         }
-        if (res == 'Up' || res == "Out") {
+        if (res === 'Up' || res === "Out") {
             this.drawingData.flag = false;
             var image = new Image();
             image.src = this.textureCanvas.toDataURL();
             this.setTexture(image);
         }
-        if (res == 'Move') {
+        if (res === 'Move') {
             if (this.drawingData.flag) {
                 this.drawingData.prevX = this.drawingData.currX;
                 this.drawingData.prevY = this.drawingData.currY;
@@ -412,7 +419,7 @@ export default class ThreeDViewer extends React.Component {
 
 
         const handleFile = async (file) => {
-            const fileType = file.name.split(".")[1];
+            let fileType = file.name.split(".")[1];
             if (fileType === "") {
                 const re = new RegExp("\\.(\\w+)$");
                 fileType = re.exec(file.name)[1];
@@ -540,18 +547,18 @@ export default class ThreeDViewer extends React.Component {
                 {/* Object Selector */}
                 <canvas canvas-id={this.props.id} className="Viewer-Canvas" onDrop={this.handleObjectDrop.bind(this)} onDragOver={this.handleDragOver.bind(this)}></canvas>
                 <div className="Object-Selector">
-                    <img caller-id={this.props.id + '-' + "Object-Select"} src={DownArrow} className="Object-Selector-Expander" alt="" onClick={() => { this.expandObjectSelector(this.props.id + '-' + "Object-Select") }} />
-                    <div control-id={this.props.id + '-' + "Object-Select"} className="Object-Selector-Container Selector-Collapsed" >
+                    <img caller-id={this.props.id + "-Object-Select"} src={DownArrow} className="Object-Selector-Expander" alt="" onClick={() => { this.expandObjectSelector(this.props.id + "-Object-Select") }} />
+                    <div control-id={this.props.id + "-Object-Select"} className="Object-Selector-Container Selector-Collapsed" >
 
                         <div className="vector-item" >
-                            <div className="vector-header" onClick={() => { this.collapseItem(this.props.id + '-' + "Object-Add") }}>
+                            <div className="vector-header" onClick={() => { this.collapseItem(this.props.id + "-Object-Add") }}>
                                 <label htmlFor="range">{"Add Object"}</label>
-                                <img src={DownArrow} caller-id={this.props.id + '-' + "Object-Add"} />
+                                <img src={DownArrow} caller-id={this.props.id + "-Object-Add"} alt="collapse/expand" />
                             </div>
-                            <div control-id={this.props.id + '-' + "Object-Add"} className="vector-controls collapsed ">
-                                <p className="Addable-Object" onClick={() => { this.addObject('Cube'); this.collapseItem(this.props.id + '-' + "Object-Add") }}>Cube</p>
-                                <p className="Addable-Object" onClick={() => { this.addObject('Cone'); this.collapseItem(this.props.id + '-' + "Object-Add") }}>Cone</p>
-                                <p className="Addable-Object" onClick={() => { this.addObject('Sphere'); this.collapseItem(this.props.id + '-' + "Object-Add") }}>Sphere</p>
+                            <div control-id={this.props.id + "-Object-Add"} className="vector-controls collapsed ">
+                                <p className="Addable-Object" onClick={() => { this.addObject('Cube'); this.collapseItem(this.props.id + "-Object-Add") }}>Cube</p>
+                                <p className="Addable-Object" onClick={() => { this.addObject('Cone'); this.collapseItem(this.props.id + "-Object-Add") }}>Cone</p>
+                                <p className="Addable-Object" onClick={() => { this.addObject('Sphere'); this.collapseItem(this.props.id + "-Object-Add") }}>Sphere</p>
                             </div>
                         </div>
                         {
@@ -588,6 +595,8 @@ export default class ThreeDViewer extends React.Component {
                                 Object.keys(this.scene).map((key, index) => {
                                     if (key && this.scene) {
                                         return (<InputManager key={this.props.id + index + key} subKey={this.props.id + '-' + index + '-' + key} object={this.scene} k={key} collapseItem={this.collapseItem.bind(this)} />);
+                                    } else {
+                                        return <></>;
                                     }
                                 })
                             }
@@ -605,6 +614,8 @@ export default class ThreeDViewer extends React.Component {
                                 Object.keys(this.selectedObject).map((key, index) => {
                                     if (key && this.selectedObject) {
                                         return (<InputManager key={this.props.id + index + key} subKey={this.props.id + '-' + index + '-' + key} object={this.selectedObject} k={key} collapseItem={this.collapseItem.bind(this)} />);
+                                    } else {
+                                        return <></>;
                                     }
                                 })
                             }

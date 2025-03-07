@@ -26,7 +26,7 @@ export default class WindowManager extends React.Component {
             this.StartPaneToggle();
         };
         let intersected = this.Windows.filter(w => w.params.x <= e.clientX && w.params.x + w.params.width >= e.clientX && w.params.y <= e.clientY && w.params.y + w.params.height >= e.clientY);
-        if (intersected.length == 0) {
+        if (intersected.length === 0) {
             return;
         } else if (intersected instanceof Array && intersected.length > 1) {
             intersected = intersected.sort((a, b) => b.params.zIndex - a.params.zIndex)[0];

@@ -15,7 +15,7 @@ const ObjectSelectionControl = ({ object, selectObject, selectedObject }) => {
     return (
         <div onClick={() => { selectObject(object) }} className={selectedObject === object ? "Selectable-Object-Container Selected-Object" : "Selectable-Object-Container Selectable-Object"}>
             <p >{object.name ? object.name : object.type}</p>
-            <img src={TrashCan} onClick={handleDeleteSelf} className="Self-Delete-Object" />
+            <img src={TrashCan} onClick={handleDeleteSelf} alt="Something went wrong" className="Self-Delete-Object" />
         </div>
     );
 }

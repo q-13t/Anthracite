@@ -16,7 +16,7 @@ const IntegerControl = ({ object, k }) => {
         return () => {
 
         };
-    }, [object[k]]);
+    }, [object[k], k, object]);
 
 
 
