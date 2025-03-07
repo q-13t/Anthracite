@@ -24,6 +24,11 @@
     flex: 1 1;
 }
 
+code {
+    background-color: var(--text-color);
+    color: var(--highlight-color);
+}
+
 button {
     background-color: var(--background-color);
     color: var(--text-color);
