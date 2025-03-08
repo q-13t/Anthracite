@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/Anthracite/static/css/main.a5e07183.css",
-    "main.js": "/Anthracite/static/js/main.97491500.js",
+    "main.js": "/Anthracite/static/js/main.2e719108.js",
     "static/media/TrashCan.svg": "/Anthracite/static/media/TrashCan.8d286da60dce445dbbc32c7accdc7ecd.svg",
     "static/media/Anthracite.svg": "/Anthracite/static/media/Anthracite.74ff0bac0bddf664fdde2b5ba5ce1dfb.svg",
     "static/media/Maximize.svg": "/Anthracite/static/media/Maximize.42b6e4279f7264701ff2e6e0698f9262.svg",
@@ -13,10 +13,10 @@
     "static/media/Close.svg": "/Anthracite/static/media/Close.574abe5ae2db086017d24d3e637c0f9b.svg",
     "static/media/Hide.svg": "/Anthracite/static/media/Hide.61dc7ead5a000d361da3bbc5755b2a52.svg",
     "main.a5e07183.css.map": "/Anthracite/static/css/main.a5e07183.css.map",
-    "main.97491500.js.map": "/Anthracite/static/js/main.97491500.js.map"
+    "main.2e719108.js.map": "/Anthracite/static/js/main.2e719108.js.map"
   },
   "entrypoints": [
     "static/css/main.a5e07183.css",
-    "static/js/main.97491500.js"
+    "static/js/main.2e719108.js"
   ]
 }
